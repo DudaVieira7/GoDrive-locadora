@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import iconeBranco from '../../assets/iconePerfilBranco.png';
 import iconePreto from '../../assets/iconePerfilPreto.svg';
 
+
 interface HeaderPerfilProps {
   isHovered: boolean;
 }
@@ -19,6 +20,7 @@ const ImagemPerfil = styled.img`
   width: 27px;
   height: auto;
   object-fit: contain;
+  cursor: pointer;
 `;
 
 const EntrarPerfil = styled.nav`

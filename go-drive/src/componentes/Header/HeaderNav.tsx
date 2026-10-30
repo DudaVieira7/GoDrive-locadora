@@ -1,5 +1,6 @@
 
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 interface HeaderNavProps {
   isHovered: boolean;
@@ -8,12 +9,12 @@ interface HeaderNavProps {
 
 const HeaderLinks = styled.nav`
   display: flex;
-  max-width: 550px;
+  max-width: 600px;
   width: 100%;
   justify-content: space-between;
 `;
 
-const HeaderItens = styled.a<{ $isHovered: boolean }>`
+const HeaderItens = styled(Link)<{ $isHovered: boolean }>`
   text-decoration: none;
   color: ${({ $isHovered }) =>
     $isHovered ? '#000000' : '#FFFFFF'};
@@ -25,9 +26,10 @@ const HeaderItens = styled.a<{ $isHovered: boolean }>`
 
 function HeaderNav({ isHovered, onHoverChange }: HeaderNavProps) {
   const headerLinks = [
-    'CARROS',
-    'COMO FUNCIONA',
-    'SOBRE NÓS'
+    'Frota',
+    'Planos',
+    'Sobre',
+    'Contato'
   ];
 
   return (
@@ -37,7 +39,7 @@ function HeaderNav({ isHovered, onHoverChange }: HeaderNavProps) {
       {headerLinks.map((link) => (
         <HeaderItens
           key={link}
-          href="#"
+          to={`/${link.toLowerCase()}`}
           $isHovered={isHovered}
         >
           {link}
