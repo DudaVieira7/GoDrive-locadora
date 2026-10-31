@@ -13,10 +13,11 @@ const HeaderContainer = styled.header<{ $isActive: boolean }>`
   height: 90px;
   align-items: center;
 
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
-
 
   // Altera o fundo dependendo do estado recebido.
   // Se $isActive for true, o fundo será branco.
