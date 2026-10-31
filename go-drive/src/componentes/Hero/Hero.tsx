@@ -1,13 +1,16 @@
+import { useRef } from 'react';
 import styled from 'styled-components';
-import Header from '../Header/Header';
+import HeroContent from './HeroContent';
 import videoHero from '../../../public/hero-locadora-site.mp4';
+import HeroScroll from './HeroScroll';
 
 const HeroContainer = styled.section`
   position: relative;
   width: 100%;
   height: 100vh;
-  min-height: 600px;
+  min-height: 700px;
   overflow: hidden;
+  text-algin: center;
 `;
 
 const VideoBackground = styled.video`
@@ -30,42 +33,18 @@ const Overlay = styled.div`
   z-index: 1;
 `;
 
-const HeroContent = styled.div`
-  position: relative;
-  z-index: 2;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 
-  height: 100%;
-  padding: 0 9%;
-  color: white;
-`;
+interface HeroProps {
+  
+  scrollTargetId?: string;
+}
 
-const HeroTitle = styled.h1`
-  max-width: 550px;
-  font-size: 2.5rem;
-  font-weight: 700;
-`;
+function Hero({ scrollTargetId }: HeroProps) {
+  const heroRef = useRef<HTMLElement>(null);
 
-const HeroButton = styled.button`
-  width: fit-content;
-  padding: 20px 30px;
-
-  border: none;
-  border-radius: 50px;
-
-  background-color: #84ff00;
-  color: black;
-
-  font-weight: 700;
-  cursor: pointer;
-`;
-
-function Hero() {
   return (
-    <HeroContainer>
+    <HeroContainer ref={heroRef}>
       <VideoBackground
         autoPlay
         muted
@@ -76,18 +55,10 @@ function Hero() {
       </VideoBackground>
 
       <Overlay />
+      
+      <HeroContent/>
 
-      <Header />
-
-      <HeroContent>
-        <HeroTitle>
-          Encontre o seu próximo veículo
-        </HeroTitle>
-
-        <HeroButton>
-          Encontre seu próximo caminho.
-        </HeroButton>
-      </HeroContent>
+      <HeroScroll containerRef={heroRef} scrollTargetId={scrollTargetId} />
     </HeroContainer>
   );
 }
