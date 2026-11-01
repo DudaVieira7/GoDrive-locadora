@@ -1,25 +1,44 @@
 import { useCallback, useEffect, useRef, type RefObject } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
-// true  = respeita "reduzir movimento" do sistema (animação e snap desligados)
-// false = sempre anima, mesmo com "reduzir movimento" ativado
 const RESPECT_REDUCED_MOTION = false;
 
-const SNAP_LOCK_MS = 1000;   // tempo em que ignora novos gestos após um snap
-const TOUCH_THRESHOLD = 40;  // distância mínima do swipe (px)
-const EDGE_TOLERANCE = 10;   // margem (px) para considerar "chegou no topo"
+const SNAP_DURATION = 1300;   // duração da descida (ms) - aumente para ficar mais lento
+const WHEEL_THRESHOLD = 60;   // quanto o usuário precisa rolar antes do snap disparar
+const TOUCH_THRESHOLD = 60;   // distância mínima do swipe (px)
+const EDGE_TOLERANCE = 10;    // margem (px) para considerar "chegou no topo"
 
 interface ScrollDownProps {
-  /** seção (ex.: o hero) dentro da qual o indicador aparece e de onde o snap parte */
   containerRef: RefObject<HTMLElement | null>;
-  /** id do elemento até onde descer; se omitido, usa a próxima seção da página */
   scrollTargetId?: string;
+}
+
+/* ---------- Animação de scroll ---------- */
+
+const easeInOutCubic = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+function animateScrollTo(targetY: number, duration: number, onDone: () => void) {
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  const startTime = performance.now();
+
+  const step = (now: number) => {
+    const progress = Math.min((now - startTime) / duration, 1);
+    window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      onDone();
+    }
+  };
+
+  requestAnimationFrame(step);
 }
 
 /* ---------- Estilos ---------- */
 
-// A linha cresce a partir do topo até o tamanho total e depois
-// "some" encolhendo em direção à base.
 const scrollLine = keyframes`
   0% {
     transform: scaleY(0);
@@ -57,6 +76,7 @@ const Button = styled.button`
   background: transparent;
 
   color: white;
+  cursor: pointer;
 
   opacity: 0.85;
   transition: opacity 0.2s ease;
@@ -109,7 +129,7 @@ const Track = styled.span`
   `}
 `;
 
-/* ---------- Componente ---------- */
+
 
 function HeroScroll({ containerRef, scrollTargetId }: ScrollDownProps) {
   const isSnapping = useRef(false);
@@ -119,32 +139,31 @@ function HeroScroll({ containerRef, scrollTargetId }: ScrollDownProps) {
     return containerRef.current?.nextElementSibling as HTMLElement | null;
   }, [containerRef, scrollTargetId]);
 
-  const lock = () => {
+  const snapTo = useCallback((y: number) => {
     isSnapping.current = true;
-    window.setTimeout(() => {
+    animateScrollTo(y, SNAP_DURATION, () => {
       isSnapping.current = false;
-    }, SNAP_LOCK_MS);
-  };
+    });
+  }, []);
 
   const goDown = useCallback(() => {
-    lock();
     const target = getTarget();
+    const y = target
+      ? target.getBoundingClientRect().top + window.scrollY
+      : (containerRef.current?.getBoundingClientRect().bottom ?? window.innerHeight) +
+        window.scrollY;
 
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      // Sem seção seguinte: rola o equivalente ao que resta do hero
-      const bottom = containerRef.current?.getBoundingClientRect().bottom;
-      window.scrollBy({ top: bottom ?? window.innerHeight, behavior: 'smooth' });
-    }
-  }, [containerRef, getTarget]);
+    snapTo(y);
+  }, [containerRef, getTarget, snapTo]);
 
   const goUp = useCallback(() => {
-    lock();
-    containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [containerRef]);
+    const top = containerRef.current
+      ? containerRef.current.getBoundingClientRect().top + window.scrollY
+      : 0;
 
-  // Snap: ao rolar para baixo no hero, desce sozinho até a próxima seção
+    snapTo(top);
+  }, [containerRef, snapTo]);
+
   useEffect(() => {
     if (
       RESPECT_REDUCED_MOTION &&
@@ -153,16 +172,16 @@ function HeroScroll({ containerRef, scrollTargetId }: ScrollDownProps) {
       return;
     }
 
+    let wheelAcc = 0;
+    let wheelTimer: number | undefined;
     let touchStartY = 0;
     let touchHandled = false;
 
-    // O hero ainda aparece na tela (a seção seguinte não chegou ao topo)
     const inHero = () => {
       const rect = containerRef.current?.getBoundingClientRect();
       return !!rect && rect.bottom > EDGE_TOLERANCE;
     };
 
-    // A seção seguinte está encostada no topo da tela
     const atTarget = () => {
       const rect = getTarget()?.getBoundingClientRect();
       return !!rect && Math.abs(rect.top) <= EDGE_TOLERANCE;
@@ -174,11 +193,22 @@ function HeroScroll({ containerRef, scrollTargetId }: ScrollDownProps) {
         return;
       }
 
-      if (e.deltaY > 0 && inHero()) {
-        e.preventDefault();
+      const goingDown = e.deltaY > 0 && inHero();
+      const goingUp = e.deltaY < 0 && atTarget();
+      if (!goingDown && !goingUp) return;
+
+      e.preventDefault();
+
+      
+      wheelAcc += e.deltaY;
+      window.clearTimeout(wheelTimer);
+      wheelTimer = window.setTimeout(() => (wheelAcc = 0), 150);
+
+      if (goingDown && wheelAcc >= WHEEL_THRESHOLD) {
+        wheelAcc = 0;
         goDown();
-      } else if (e.deltaY < 0 && atTarget()) {
-        e.preventDefault();
+      } else if (goingUp && wheelAcc <= -WHEEL_THRESHOLD) {
+        wheelAcc = 0;
         goUp();
       }
     };
@@ -195,7 +225,7 @@ function HeroScroll({ containerRef, scrollTargetId }: ScrollDownProps) {
       }
       if (touchHandled) return;
 
-      const diff = touchStartY - e.touches[0].clientY; // >0 = dedo subindo
+      const diff = touchStartY - e.touches[0].clientY;
 
       if (diff > TOUCH_THRESHOLD && inHero()) {
         e.preventDefault();
@@ -208,12 +238,12 @@ function HeroScroll({ containerRef, scrollTargetId }: ScrollDownProps) {
       }
     };
 
-    // passive: false é necessário para poder usar preventDefault
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
     return () => {
+      window.clearTimeout(wheelTimer);
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
@@ -221,11 +251,7 @@ function HeroScroll({ containerRef, scrollTargetId }: ScrollDownProps) {
   }, [containerRef, getTarget, goDown, goUp]);
 
   return (
-    <Button
-      type="button"
-      onClick={goDown}
-      aria-label="Rolar para a próxima seção"
-    >
+    <Button type="button" onClick={goDown} aria-label="Rolar para a próxima seção">
       <Track aria-hidden="true" />
       <Label>Rolar</Label>
     </Button>

@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import '@fontsource-variable/science-gothic';
 import Button from "../Button/Button";
+import { useNavigate } from 'react-router-dom';
 
-
-const ContentHero = styled.div`
+const ContentHero = styled.section`
   position: relative;
   z-index: 1;
 
@@ -12,7 +12,7 @@ const ContentHero = styled.div`
   gap: 50px;
   justify-content: center;
 
-  height: 100%;
+  height: 100vh;
   padding: 0 9%;
   color: white;
 `;
@@ -27,6 +27,11 @@ const HeroTitle = styled.h1`
 
 
 function HeroContent() {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate('/contato'); // Rota para onde você quer ir
+  };
   return (
 
       <ContentHero>
@@ -42,7 +47,10 @@ function HeroContent() {
             width="300px"
             height="75px"
             padding="0"
-            borderRadius="50px"  
+            borderRadius="50px"
+            
+            
+            onClick={handleNavigate}
         >
        Reservar Agora
         </Button>
