@@ -1,8 +1,10 @@
 import greenCar from '../../../public/images/ferrarif8verde.png';
 import grayCar from '../../../public/images/PorscheBoxster.png';
 import blackCar from '../../../public/images/Porsche992Carrera4GTSMkI.png';
+import { useNavigate } from 'react-router-dom';
 import './CarCards.css';
 import Button from '../Button/Button';
+import '@fontsource-variable/science-gothic';
 
 interface Car {
   name: string;
@@ -29,6 +31,11 @@ const cars: Car[] = [
 ];
 
 function CarCards() {
+  
+  const navigate = useNavigate();
+   const handleNavigate = () => {
+    navigate('/frota'); // Rota para onde você quer ir
+  };
   return (
     <div className="carContainer">
       <div>
@@ -47,7 +54,22 @@ function CarCards() {
         ))}
         
       </div>
-      <Button></Button>
+      <Button
+        background="#fff"
+        color="#43501C"
+        fontFamily="Science Gothic Variable"
+        fontWeight="600"
+        fontSize="20px"
+        padding="23px"
+        width="510px"
+        borderRadius="15px"
+        borderWidth="2px"
+        borderColor="#84ff00"
+        hoverBackground="#84ff00"
+        onClick={handleNavigate}
+      >
+        Todos os carros
+      </Button>
     </div>
   );
 }
