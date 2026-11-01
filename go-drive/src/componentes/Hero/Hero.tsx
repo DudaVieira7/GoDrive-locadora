@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import styled from 'styled-components';
 import HeroContent from './HeroContent';
-import videoHero from '../../../public/hero-locadora-site.mp4';
 import HeroScroll from './HeroScroll';
+import videoHero from '../../../public/hero-locadora-site.mp4';
 
 const HeroContainer = styled.section`
   position: relative;
@@ -10,7 +10,8 @@ const HeroContainer = styled.section`
   height: 100vh;
   min-height: 700px;
   overflow: hidden;
-  text-algin: center;
+  text-align: center;
+  flex: 1;
 `;
 
 const VideoBackground = styled.video`
@@ -33,32 +34,20 @@ const Overlay = styled.div`
   z-index: 1;
 `;
 
-
-
-interface HeroProps {
-  
-  scrollTargetId?: string;
-}
-
-function Hero({ scrollTargetId }: HeroProps) {
+function Hero() {
   const heroRef = useRef<HTMLElement>(null);
 
   return (
     <HeroContainer ref={heroRef}>
-      <VideoBackground
-        autoPlay
-        muted
-        loop
-        playsInline
-      >
+      <VideoBackground autoPlay muted loop playsInline>
         <source src={videoHero} type="video/mp4" />
       </VideoBackground>
 
       <Overlay />
-      
-      <HeroContent/>
 
-      <HeroScroll containerRef={heroRef} scrollTargetId={scrollTargetId} />
+      <HeroContent />
+
+      <HeroScroll containerRef={heroRef} scrollTargetId="veiculos" />
     </HeroContainer>
   );
 }
