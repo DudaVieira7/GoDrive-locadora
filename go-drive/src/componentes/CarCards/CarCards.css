@@ -1,0 +1,58 @@
+@import url('https://cdn.jsdelivr.net/npm/@fontsource-variable/science-gothic@5.3.0/index.css');
+.carImage{
+
+    width: 400px;
+    height: 200px;
+    object-fit: contain;
+    background-color: #F8F8F8;
+    border-radius: 7px;
+
+
+
+}
+
+.carContainer{
+    width: 100%;
+    height: 900px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    gap: 60px;
+}
+
+.cards{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding-top: 10px;
+    margin-top: 20px;
+
+    
+}
+
+.titulo{
+    font-size: 3rem;
+    font-family: 'Science Gothic Variable';
+    margin-top: 20px;
+    
+}
+
+
+.carDescription{
+    color:#717679;
+    max-width: 400px;
+    padding-top: 10px;
+    font-weight: 100;
+}
+
+.carName{
+    font-family: 'Science Gothic Variable';
+    margin-top: 10px;
+    color:#1b1d20;
+    padding: 10px;
+    font-weight: 600;
+}
