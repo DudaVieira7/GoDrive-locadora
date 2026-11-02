@@ -54,7 +54,7 @@ function HeroContent() {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate('/contato');
+    navigate('/frota');
   };
 
   return (
