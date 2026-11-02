@@ -54,22 +54,24 @@ function CarCards() {
         ))}
         
       </div>
-      <Button
-        background="#fff"
-        color="#43501C"
-        fontFamily="Science Gothic Variable"
-        fontWeight="600"
-        fontSize="20px"
-        padding="23px"
-        width="510px"
-        borderRadius="15px"
-        borderWidth="2px"
-        borderColor="#84ff00"
-        hoverBackground="#84ff00"
-        onClick={handleNavigate}
-      >
-        Todos os carros
-      </Button>
+      <div className="carButton">
+        <Button
+          background="#F8F8F8"
+          color="#3d4918"
+          fontFamily="Science Gothic Variable"
+          fontWeight="600"
+          fontSize="20px"
+          padding="23px"
+          width="100%"
+          borderRadius="15px"
+          borderWidth="2px"
+          borderColor="#84ff00"
+          hoverBackground="#84ff00"
+          onClick={handleNavigate}
+        >
+          Todos os carros
+        </Button>
+      </div>
     </div>
   );
 }
