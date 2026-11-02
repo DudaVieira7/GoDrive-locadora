@@ -1,53 +1,35 @@
-
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { FaBars, FaXmark } from 'react-icons/fa6';
+import './Header.css';
 
 import HeaderLogo from './HeaderLogo';
 import HeaderNav from './HeaderNav';
 import HeaderPerfil from './HeaderPerfil';
 
+/* Só o que depende de estado fica no styled */
 const HeaderContainer = styled.header<{ $isActive: boolean }>`
-  display: flex;
-  justify-content: space-between;
-  padding: 30px;
-  height: 90px;
-  align-items: center;
-
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-
-  // Altera o fundo dependendo do estado recebido.
-  // Se $isActive for true, o fundo será branco.
-  // Se for false, será transparente.
-
-
   background-color: ${({ $isActive }) =>
     $isActive ? '#FFFFFF' : 'transparent'};
-
   transition: background-color 0.3s ease;
-
   box-shadow: ${({ $isActive }) =>
     $isActive ? '0 2px 10px rgba(0,0,0,0.05)' : 'none'};
+`;
+
+const MenuButton = styled.button<{ $isActive: boolean }>`
+  color: ${({ $isActive }) => ($isActive ? '#000000' : '#FFFFFF')};
+  transition: color 0.3s ease;
 `;
 
 function Header() {
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-
-
-      // window.scrollY informa quantos pixels a página foi rolada.
-      // Se for maior que 20, o estado será true.
-      // Caso contrário, será false.
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
-    // Adiciona um ouvinte para detectar a rolagem da página.
 
     window.addEventListener('scroll', handleScroll);
     handleScroll();
@@ -56,20 +38,13 @@ function Header() {
     };
   }, []);
 
-      // Limpa o evento quando o componente é desmontado.
-    // Evita manter um listener desnecessário.
-
-    // [] significa que esse efeito é configurado
-    // apenas na montagem do componente.
-
-    // Verifica se o efeito deve estar ativo.
-    // Se isHovered OU isScrolled forem true,
-    // isActive também será true.
-    
-  const isActive = isHovered || isScrolled;
+  // Com o menu aberto o header também fica branco,
+  // senão os links brancos sumiriam no painel branco
+  const isActive = isHovered || isScrolled || isMenuOpen;
 
   return (
     <HeaderContainer
+      className="header"
       $isActive={isActive}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -77,10 +52,24 @@ function Header() {
 
       <HeaderNav
         isHovered={isActive}
+        isOpen={isMenuOpen}
         onHoverChange={setIsHovered}
+        onLinkClick={() => setIsMenuOpen(false)}
       />
 
-      <HeaderPerfil isHovered={isActive} />
+      <div className="headerRight">
+        <HeaderPerfil isHovered={isActive} />
+
+        <MenuButton
+          className="menuButton"
+          $isActive={isActive}
+          onClick={() => setIsMenuOpen((open) => !open)}
+          aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={isMenuOpen}
+        >
+          {isMenuOpen ? <FaXmark /> : <FaBars />}
+        </MenuButton>
+      </div>
     </HeaderContainer>
   );
 }

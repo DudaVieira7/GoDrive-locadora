@@ -15,6 +15,13 @@ const LogoImage = styled.img`
   object-fit: contain;
   cursor: pointer;
   transition: opacity 0.3s ease;
+
+
+
+@media (max-width: 360px) {
+  width: 95px;
+}
+
 `;
 
 function HeaderLogo({ isHovered }: HeaderLogoProps) {

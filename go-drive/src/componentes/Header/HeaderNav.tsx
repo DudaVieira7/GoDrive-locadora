@@ -1,18 +1,12 @@
-
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 interface HeaderNavProps {
   isHovered: boolean;
+  isOpen: boolean;
   onHoverChange: (hovered: boolean) => void;
+  onLinkClick: () => void;
 }
-
-const HeaderLinks = styled.nav`
-  display: flex;
-  max-width: 600px;
-  width: 100%;
-  justify-content: space-between;
-`;
 
 const HeaderItens = styled(Link)<{ $isHovered: boolean }>`
   text-decoration: none;
@@ -24,16 +18,12 @@ const HeaderItens = styled(Link)<{ $isHovered: boolean }>`
   transition: color 0.3s ease;
 `;
 
-function HeaderNav({ isHovered, onHoverChange }: HeaderNavProps) {
-  const headerLinks = [
-    'Frota',
-    'Planos',
-    'Sobre',
-    'Contato'
-  ];
+function HeaderNav({ isHovered, isOpen, onHoverChange, onLinkClick }: HeaderNavProps) {
+  const headerLinks = ['Frota', 'Planos', 'Sobre', 'Contato'];
 
   return (
-    <HeaderLinks
+    <nav
+      className={`headerNav ${isOpen ? 'open' : ''}`}
       onMouseEnter={() => onHoverChange(true)}
     >
       {headerLinks.map((link) => (
@@ -41,11 +31,12 @@ function HeaderNav({ isHovered, onHoverChange }: HeaderNavProps) {
           key={link}
           to={`/${link.toLowerCase()}`}
           $isHovered={isHovered}
+          onClick={onLinkClick}
         >
           {link}
         </HeaderItens>
       ))}
-    </HeaderLinks>
+    </nav>
   );
 }
 

@@ -1,0 +1,75 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 30px;
+  height: 90px;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Perfil + botão hambúrguer */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Navegação (desktop) */
+.headerNav {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Botão hambúrguer:*/
+.menuButton {
+  display: none;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+/* ===== Mobile / tablet ===== */
+@media (max-width: 900px) {
+  .menuButton {
+    display: flex;
+  }
+
+  /* A nav vira um painel que cai embaixo do header */
+  .headerNav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    max-width: none;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20px;
+    padding: 24px 30px;
+    background: #fff;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .headerNav.open {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 20px;
+  }
+}
+
+
