@@ -105,7 +105,7 @@ const Label = styled.span`
 const Track = styled.span`
   position: relative;
   display: block;
-
+  alin-items: flex-end;
   width: 1px;
   height: 140px;
 

@@ -7,13 +7,16 @@ import videoHero from '../../../public/hero-locadora-site.mp4';
 const HeroContainer = styled.section`
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 700px;
+  height: 100vh;   /* fallback para navegadores antigos */
+  height: 100dvh;  /* altura real da tela no celular */
+  min-height: 560px;
   overflow: hidden;
-  text-align: center;
   flex: 1;
-`;
 
+  @media (max-width: 600px) {
+    min-height: 520px;
+  }
+`;
 const VideoBackground = styled.video`
   position: absolute;
   top: 0;
