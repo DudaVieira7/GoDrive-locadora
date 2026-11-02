@@ -18,24 +18,47 @@
   text-align: center;
 }
 
-/* Grid responsivo: cria quantas colunas couberem */
-.cards {
+/* ===== Carrossel ===== */
+.carousel {
+  position: relative;
   width: 100%;
-  max-width: 1400px;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  padding: 20px;
-  background-color: #fffcfc;
-  border-radius: 15px;
+  max-width: 1100px;
 }
 
+.track {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr;
+  align-items: start;
+  gap: 48px;
+  padding: 0 40px;
+}
+
+/* ===== Card ===== */
 .carCard {
   margin: 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* carros dos lados: menores e clicáveis */
+.carCard--side {
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.carCard--side .carImage {
+  height: 180px;
+}
+
+/* carro do centro: maior */
+.carCard--center .carImage {
+  height: 260px;
+}
+
+.imageWrapper {
+  position: relative;
 }
 
 .carImage {
@@ -68,17 +91,58 @@
   line-height: 1.5rem;
 }
 
+/* ===== Setas (no meio da imagem do carro central) ===== */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 3px solid #84ff00;
+  background: #fff;
+  color: #84ff00;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+ 
+}
+
+.arrow:hover {
+  background: #84ff00;
+  color: #000;
+}
+
+/* metade pra fora da imagem, como no design */
+.arrowLeft  { left: -40px; }
+.arrowRight { right: -40px; }
+
+/* ===== Botão ===== */
 .carButton {
   width: 100%;
   max-width: 510px;
 }
 
+/* ===== Responsivo ===== */
+@media (max-width: 768px) {
+  .track {
+    grid-template-columns: 1fr;
+    padding: 0 36px;
+  }
+
+  .carCard--side {
+    display: none;
+  }
+
+  .carCard--center .carImage {
+    height: 220px;
+  }
+}
+
 @media (max-width: 600px) {
   .carContainer {
     padding: 40px 16px;
-  }
-
-  .cards {
-    padding: 12px;
   }
 }

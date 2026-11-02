@@ -1,7 +1,9 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import greenCar from '../../../public/images/ferrarif8verde.png';
 import grayCar from '../../../public/images/PorscheBoxster.png';
 import blackCar from '../../../public/images/Porsche992Carrera4GTSMkI.png';
-import { useNavigate } from 'react-router-dom';
 import './CarCards.css';
 import Button from '../Button/Button';
 import '@fontsource-variable/science-gothic';
@@ -31,29 +33,58 @@ const cars: Car[] = [
 ];
 
 function CarCards() {
-  
   const navigate = useNavigate();
-   const handleNavigate = () => {
-    navigate('/frota'); // Rota para onde você quer ir
-  };
+  const [current, setCurrent] = useState(0);
+  const total = cars.length;
+
+  const prev = () => setCurrent((c) => (c - 1 + total) % total);
+  const next = () => setCurrent((c) => (c + 1) % total);
+
+  
+  const visible = [(current - 1 + total) % total, current, (current + 1) % total];
+
   return (
     <div className="carContainer">
-      <div>
-        <h2 className="titulo">Carros em destaque</h2>
-      </div>
+      <h2 className="titulo">Carros em destaque</h2>
 
-      <div className="cards">
-        {cars.map((car) => (
-          <figure className="carCard" key={car.name}>
+<div className="carousel">
+  <div className="track">
+    {visible.map((index, pos) => {
+      const car = cars[index];
+      const isCenter = pos === 1;
+
+      return (
+        <figure
+          key={car.name}
+          className={`carCard ${isCenter ? 'carCard--center' : 'carCard--side'}`}
+          onClick={() => !isCenter && setCurrent(index)}
+        >
+          <div className="imageWrapper">
+            {isCenter && (
+              <button className="arrow arrowLeft" onClick={prev} aria-label="Carro anterior">
+                <MdChevronLeft size={18} />
+              </button>
+            )}
+
             <img className="carImage" src={car.image} alt={car.name} />
-            <figcaption className="carInfo">
-              <h3 className="carName">{car.name}</h3>
-              <p className="carDescription">{car.description}</p>
-            </figcaption>
-          </figure>
-        ))}
-        
-      </div>
+
+            {isCenter && (
+              <button className="arrow arrowRight" onClick={next} aria-label="Próximo carro">
+                <MdChevronRight size={18} />
+              </button>
+            )}
+          </div>
+
+          <figcaption className="carInfo">
+            <h3 className="carName">{car.name}</h3>
+            <p className="carDescription">{car.description}</p>
+          </figcaption>
+        </figure>
+      );
+    })}
+  </div>
+</div>
+
       <div className="carButton">
         <Button
           background="#F8F8F8"
@@ -67,7 +98,7 @@ function CarCards() {
           borderWidth="2px"
           borderColor="#84ff00"
           hoverBackground="#84ff00"
-          onClick={handleNavigate}
+          onClick={() => navigate('/frota')}
         >
           Todos os carros
         </Button>
