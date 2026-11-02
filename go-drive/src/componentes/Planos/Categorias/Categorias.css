@@ -1,0 +1,247 @@
+.categorias {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding: 80px 4%;
+  background: #fff;
+  box-shadow: 0px 4px 4px rgba(212, 211, 211, 0.25);
+}
+
+.categoriasCabecalho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.categoriasTitulo {
+  font-family: 'Science Gothic Variable';
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  color: #1b1d20;
+}
+
+.categoriasTexto {
+  font-weight: 300;
+  color: #717679;
+  font-family: 'Science Gothic Variable';
+}
+
+/* ===== Palco: texto à esquerda, carro à direita ===== */
+.categoriaPalco {
+  width: 100%;
+  max-width: 1100px;
+  min-height: 560px;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 15px;
+}
+
+.categoriaLado {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 48px;
+}
+
+.categoriaDetalhe {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  animation: aparecer 0.35s ease;
+}
+
+.categoriaNome {
+  font-family: 'Science Gothic Variable';
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #1b1d20;
+}
+
+/* ===== Números grandes com legenda miúda ===== */
+.categoriaStats {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.categoriaStat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.categoriaValor {
+  font-weight: 300;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  color: #1b1d20;
+}
+
+.categoriaLegenda {
+  font-weight: 300;
+  font-size: 0.75rem;
+  color: #717679;
+}
+
+.categoriaBeneficios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  font-weight: 300;
+  font-size: 0.9rem;
+  line-height: 1.4rem;
+  color: #717679;
+}
+
+.categoriaBeneficios li {
+  padding-left: 16px;
+  position: relative;
+}
+
+.categoriaBeneficios li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.65rem;
+  width: 8px;
+  height: 1px;
+  background: #84ff00;
+}
+
+.categoriaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  font-size: 0.8rem;
+  text-decoration: none;
+  color: #1b1d20;
+}
+
+.categoriaLink svg {
+  color: #84ff00;
+}
+
+.categoriaLink:hover {
+  text-decoration: underline;
+}
+
+/* ===== Seletor de nível (miniaturas) ===== */
+.categoriaSeletor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.seletorItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.seletorItem:hover,
+.seletorItem--ativo {
+  opacity: 1;
+}
+
+.seletorItem:focus-visible {
+  outline: 2px solid #84ff00;
+  outline-offset: 4px;
+}
+
+.seletorImg {
+  width: 88px;
+  height: 40px;
+  object-fit: contain;
+  padding-bottom: 6px;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.seletorItem--ativo .seletorImg {
+  border-bottom-color: #84ff00;
+}
+
+.seletorNome {
+  font-size: 0.7rem;
+  color: #1b1d20;
+}
+
+/* ===== Painel do carro ===== */
+.categoriaImagem {
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: linear-gradient(160deg, #f6f7f8 0%, #e3e6e8 100%);
+}
+
+.categoriaImagem img {
+  width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  animation: aparecer 0.35s ease;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .categoriaDetalhe,
+  .categoriaImagem img {
+    animation: none;
+  }
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 768px) {
+  .categoriaPalco {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  /* o carro aparece primeiro no celular */
+  .categoriaImagem {
+    order: -1;
+    padding: 24px;
+  }
+
+  .categoriaImagem img {
+    max-height: 220px;
+  }
+
+  .categoriaLado {
+    padding: 32px 24px;
+  }
+
+  .categoriaStats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .categorias {
+    padding: 56px 16px;
+  }
+}
