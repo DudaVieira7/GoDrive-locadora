@@ -1,9 +1,9 @@
 import './App.css'
-import Home from './pages/Home';
-import Frota from './pages/Frota';
-import Planos from './pages/Planos';
-import Sobre from './pages/Sobre';
-import Contato from './pages/Contato';
+import Home from './pages/publicPages/Home';
+import Frota from './pages/publicPages/Frota';
+import Planos from './pages/publicPages/Planos';
+import Sobre from './pages/publicPages/Sobre';
+import Contato from './pages/publicPages/Contato';
 import './index.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
