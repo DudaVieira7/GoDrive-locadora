@@ -1,0 +1,70 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    /* Sugestão: Adiciona estas propriedades para a imagem cobrir o fundo direitinho */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.form-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra verticalmente */
+    align-items: center;     /* Centra horizontalmente */
+    min-height: 100vh;       /* Ocupa a altura total da janela */
+    width: 100%;
+    padding: 20px;
+    gap: 20px;               /* Espaçamento entre o Header, H1 e o Card */
+}
+
+
+.card-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.card-title{
+    color: #E5E4E2;
+    font-weight: 400;
+    font-family: 'Science Gothic Variable';
+    font-size: 1.4rem;
+}
+
+
+.fgpassword {
+    text-align: right;
+    padding: 5px;
+    width: 100%; 
+    font-size: 1rem;
+    
+}
+
+.fgpassword a {
+    text-decoration: none;
+    font-weight: 100;
+    color: #adff559e;
+    transition: all ease 0.5s;
+}
+
+.fgpassword a:hover {
+    text-decoration: underline;
+    color: #84ff00;
+}
+
+.bottom-text{
+    color: #d9d9d9b2;
+    width: 100%;
+    text-align: center;
+    margin-top: 40px;
+    font-size: 1rem;
+}
+
+
+.bottom-text a{
+    color: #84ff00;
+}

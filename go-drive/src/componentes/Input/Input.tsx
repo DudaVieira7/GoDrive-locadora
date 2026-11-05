@@ -1,14 +1,12 @@
-//import type deixa explícito que você está importando apenas tipos do TypeScript, e não valores utilizados em tempo de execução.
-// 
-import type {CSSProperties,InputHTMLAttributes,ReactNode} from "react";  
+import type { CSSProperties, InputHTMLAttributes, ReactNode } from "react";  
 
-type InputProps = InputHTMLAttributes<HTMLInputElement> & {  //esse HTMLInputElement funciona mais ou menos assim NomeDoTipo<TipoDoElemento> chama os atributos dele e do lado o elemento em si.
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {  
   label?: string;
   labelStyle?: CSSProperties;
   containerStyle?: CSSProperties;
   width?: string | number;
   height?: string | number;
-  backgroundColor?: string;          // declara tudo que quer no componente oq ele aceita
+  backgroundColor?: string;          
   borderColor?: string;
   placeholderColor?: string;
   borderRadius?: number;
@@ -16,6 +14,7 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {  //esse HTMLInputEle
   iconPosition?: "left" | "right";
   iconColor?: string;
   iconSize?: number;
+  onIconClick?: () => void; // <--- Adicionado para permitir clicar no ícone
 };
 
 function Input({
@@ -26,21 +25,22 @@ function Input({
   height = 48,
   backgroundColor = "#ffffff",
   borderColor = "#d1d5db",
-  placeholderColor = "#9ca3af",     // quando usar o componente e não declarar as expecipicações ele vai ficar com essas config inicias
+  placeholderColor = "#9ca3af",     
   borderRadius = 12,
   icon,
   iconPosition = "right",
   iconColor = "#6b7280",
   iconSize = 18,
   style,
-  ...rest   //pega as coisas que sobrou
+  onIconClick, // <--- Recebido aqui
+  ...rest   
 }: InputProps) {
 
-  const inputPadding = icon // se o input tiver um icone aqui vamos declarar o espaçamennto dele
+  const inputPadding = icon 
     ? iconPosition === "right"
-      ? "0 40px 0 14px" // se tiver um icone à direita o padding terá essas configurações. 
-      : "0 14px 0 40px" // se tiver um icone à esquerda o padding terá essas configurações.
-      : "0 14px";      // se não tiver nenhum fica assim.
+      ? "0 40px 0 14px" 
+      : "0 14px 0 40px" 
+      : "0 14px";      
 
   return (
     <div
@@ -49,15 +49,15 @@ function Input({
         display: "flex",
         flexDirection: "column",
         gap: "8px",
-        ...containerStyle,  // Permite personalizar o container.
+        ...containerStyle,  
       }}
     >
       {label && (
         <label
           style={{
             fontSize: 14,
-            fontWeight: 600,        // caso declare o label essas são as config iniciais
-            color: "#111827",     // se colocar label cria um Label e atribui a propriedade {label}-> texto do label
+            fontWeight: 600,        
+            color: "#111827",     
             ...labelStyle,
           }}
         >
@@ -116,6 +116,7 @@ function Input({
 
         {icon && iconPosition === "right" && (
           <div
+            onClick={onIconClick} // <--- Ativa a função ao clicar
             style={{
               position: "absolute",
               right: 12,
@@ -126,7 +127,8 @@ function Input({
               justifyContent: "center",
               color: iconColor,
               fontSize: iconSize,
-              pointerEvents: "none",
+              cursor: onIconClick ? "pointer" : "default", 
+              pointerEvents: "auto", 
             }}
           >
             {icon}
