@@ -1,0 +1,372 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --verde: #84ff00;
+  --label-color: #000; /* troque por #D9D9D9 se quiser mais legível */
+  --header-altura: 100px; /* altura do seu Header (use 0px se ele NÃO estiver sobre a imagem) */
+  --hero-altura: 400px;
+  --sobreposicao: 170px; /* quanto o card sobe por cima da imagem */
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* ===== HERO ===== */
+.pagina {
+  position: relative;
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  height: calc(var(--hero-altura) + var(--header-altura));
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: calc(var(--header-altura) + 24px); /* empurra o conteúdo para baixo do header */
+}
+
+
+.pagina > header,
+.pagina > nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2));
+  z-index: 1;
+}
+
+/* barra: busca de veículo + filtro */
+.hero-topbar {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.veiculo-search {
+  flex: 1;
+  min-width: 0;
+  height: 73px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--verde);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.veiculo-search-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 18px;
+}
+
+.veiculo-search-input::placeholder {
+  color: #fff;
+  opacity: 0.9;
+}
+
+.veiculo-search-btn {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--verde);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.filtro-btn {
+  flex: 0 0 220px;
+  height: 73px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--verde);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.filtro-btn svg {
+  color: var(--verde);
+  font-size: 20px;
+}
+
+/* ===== Wrapper do card (sobe por cima da imagem) ===== */
+.busca-wrapper {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  padding: 0 20px;
+  margin-top: calc(var(--sobreposicao) * -1);
+  display: flex;
+  justify-content: center;
+}
+
+/* ===== Container ===== */
+.busca-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ===== Grupos (cada "caixa" da barra) ===== */
+.busca-group {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 83px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.busca-group--local {
+  flex: 1.34 1 0;
+}
+
+/* ===== Campos ===== */
+.busca-field {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.busca-field--data {
+  flex: 1.5 1 0;
+}
+
+.busca-field--hora {
+  flex: 1 1 0;
+}
+
+.busca-icon {
+  display: flex;
+  align-items: center;
+  color: var(--verde);
+  font-size: 24px;
+}
+
+.busca-field-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.busca-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--label-color);
+  line-height: 1;
+}
+
+.busca-input {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color-scheme: dark;
+}
+
+.busca-input--normal {
+  font-weight: 400;
+}
+
+.busca-input::placeholder {
+  color: #fff;
+  font-weight: 400;
+  opacity: 1;
+}
+
+/* esconde o ícone nativo do calendário/relógio (usamos o nosso) */
+.busca-input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+/* ===== Botão ===== */
+.busca-button-group {
+  flex: 0.89 1 0;
+  min-width: 0;
+  display: flex;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 1024px) {
+  .busca-container {
+    flex-direction: column;
+  }
+
+  .busca-group,
+  .busca-group--local {
+    flex: none;
+    width: 100%;
+  }
+
+  .busca-button-group {
+    flex: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-topbar {
+    flex-direction: column;
+  }
+
+  .filtro-btn {
+    flex: none;
+    width: 100%;
+  }
+}
+
+
+/* Painel de filtros */
+.painel-filtros {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 20px;
+  z-index: 20;
+
+  width: 300px;
+  padding: 24px;
+
+  background: rgba(15, 15, 15, 0.96);
+  border: 1px solid #84ff00;
+  border-radius: 14px;
+
+  color: #fff;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+.painel-filtros h3 {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.filtro-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.filtro-campo label {
+  font-size: 13px;
+  color: #ddd;
+}
+
+.filtro-campo select,
+.filtro-campo input {
+  width: 100%;
+  height: 42px;
+  padding: 0 10px;
+
+  background: #292929;
+  border: 1px solid #555;
+  border-radius: 7px;
+
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+}
+
+.filtro-campo select:focus,
+.filtro-campo input:focus {
+  border-color: #84ff00;
+}
+
+.limpar-filtros {
+  width: 100%;
+  padding: 11px;
+
+  background: transparent;
+  border: 1px solid #84ff00;
+  border-radius: 7px;
+
+  color: #84ff00;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.limpar-filtros:hover {
+  background: #84ff00;
+  color: #111;
+}
+
+.sem-c{
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 300;
+  padding: 20px;
+  height: auto;
+}
+
+.iconeCarro{
+  font-size: 5rem;
+}
