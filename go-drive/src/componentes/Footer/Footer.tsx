@@ -20,7 +20,7 @@ function Footer() {
             <ul className="footerLinks">
               <li><a href="/frota">Frota</a></li>
               <li><a href="/planos">Planos</a></li>
-              <li><a href="/sobre">Sobre</a></li>
+              <li><a href="#">Sobre</a></li>
               <li><a href="/contato">Contato</a></li>
             </ul>
           </div>
