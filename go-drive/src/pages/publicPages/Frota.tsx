@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 import Header from "../../componentes/Header/Header";
@@ -37,7 +36,7 @@ function Frota() {
           </div>
         </section>
 
-        <section className="listagem-frota">
+        <section className="listagem-frota" id="frota-resultados">
           {veiculosFiltrados.length > 0 ? (
             <FrotaCarros veiculos={veiculosFiltrados} />
           ) : (

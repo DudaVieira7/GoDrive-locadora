@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IoSearchOutline, IoFilter } from "react-icons/io5";
 
-import { veiculos, verificarDisponibilidade } from "./DadosPesquisa";
+import {
+  veiculos,
+  categorias,
+  verificarDisponibilidade,
+  getNomeMarca,
+  getNomeCategoria,
+} from "./DadosPesquisa";
 import type { Veiculo, ReservaPesquisa } from "./DadosPesquisa";
 
 import DadosReserva from "./DadosReserva/DadosReserva";
@@ -33,6 +39,8 @@ function PesquisaVeiculos({
   onReservationSearch,
 }: PesquisaVeiculosProps) {
   const [textoPesquisa, setTextoPesquisa] = useState("");
+
+  // Guarda o id da categoria (fk_categoria) como texto. "" = todas.
   const [categoria, setCategoria] = useState("");
   const [precoMaximo, setPrecoMaximo] = useState("");
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
@@ -47,18 +55,20 @@ function PesquisaVeiculos({
     const textoNormalizado = normalizarTexto(textoPesquisa);
 
     return veiculos.filter((veiculo) => {
+      // Marca e categoria agora vêm das tabelas auxiliares (pelo id).
       const dadosVeiculo = normalizarTexto(
-        `${veiculo.marca} ${veiculo.modelo} ${veiculo.categoria}`
+        `${getNomeMarca(veiculo.fk_id_marca)} ${veiculo.modelo} ${getNomeCategoria(
+          veiculo.fk_categoria
+        )}`
       );
 
       const correspondePesquisa = dadosVeiculo.includes(textoNormalizado);
 
       const correspondeCategoria =
-        categoria === "" ||
-        normalizarTexto(veiculo.categoria) === normalizarTexto(categoria);
+        categoria === "" || veiculo.fk_categoria === Number(categoria);
 
       const correspondePreco =
-        precoMaximo === "" || veiculo.precoDiaria <= Number(precoMaximo);
+        precoMaximo === "" || veiculo.preco_diaria <= Number(precoMaximo);
 
       const correspondeDisponibilidade =
         !periodoPesquisado ||
@@ -142,11 +152,13 @@ function PesquisaVeiculos({
               onChange={(e) => setCategoria(e.target.value)}
             >
               <option value="">Todas as categorias</option>
-              <option value="Econômico">Econômicos</option>
-              <option value="Luxo">Luxo</option>
-              <option value="Picape">Picapes</option>
-              <option value="Sedã">Sedãs</option>
-              <option value="SUV">SUVs</option>
+
+              {/* As opções vêm da lista de categorias (futura tabela do banco). */}
+              {categorias.map((cat) => (
+                <option key={cat.id_categoria} value={cat.id_categoria}>
+                  {cat.nome}
+                </option>
+              ))}
             </select>
           </div>
 

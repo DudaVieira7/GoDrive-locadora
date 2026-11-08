@@ -1,7 +1,10 @@
 @import url('https://cdn.jsdelivr.net/npm/@fontsource-variable/science-gothic@5.3.0/index.css');
 
+
+
 .carContainer {
   width: 100%;
+ 
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

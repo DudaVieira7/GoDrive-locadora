@@ -19,7 +19,7 @@ const HeaderItens = styled(Link)<{ $isHovered: boolean }>`
 `;
 
 function HeaderNav({ isHovered, isOpen, onHoverChange, onLinkClick }: HeaderNavProps) {
-  const headerLinks = ['Frota', 'Planos', 'Sobre', 'Contato'];
+  const headerLinks = ['Frota', 'Planos', 'Contato'];
 
   return (
     <nav

@@ -4,10 +4,11 @@
     box-sizing: border-box;
 }
 body {
-    /* Sugestão: Adiciona estas propriedades para a imagem cobrir o fundo direitinho */
+    background-image: url('../../../public//images/blackCarBackgound.jpg');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
+    min-height: 100vh;
+
 }
 .form-container{
     display: flex;
@@ -29,7 +30,7 @@ body {
 }
 
 .card-title{
-    color: #E5E4E2;
+    color: #e5e4e2a9;
     font-weight: 400;
     font-family: 'Science Gothic Variable';
     font-size: 1.4rem;

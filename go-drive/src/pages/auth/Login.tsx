@@ -59,7 +59,7 @@ function Login() {
           </p>
 
           
-          <Button width="100%">
+          <Button width="100%" type="submit">
             Entrar
           </Button>
 

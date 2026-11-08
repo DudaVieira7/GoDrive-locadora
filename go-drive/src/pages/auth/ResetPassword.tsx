@@ -65,7 +65,7 @@ function ResetPassword() {
             maxLength={8}
             onIconClick={() => setMostrarSenha(!mostrarSenha)} 
           />
-            <Button width="100%" >
+            <Button width="100%" type="submit">
             Criar Conta
           </Button>
 

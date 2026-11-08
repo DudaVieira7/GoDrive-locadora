@@ -33,7 +33,7 @@ function ForgotPassword() {
             width="100%"
           />
           
-          <Button width="100%">
+          <Button width="100%" type="submit">
             Redefinir Senha
           </Button>
 

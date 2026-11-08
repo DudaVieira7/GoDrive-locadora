@@ -16,8 +16,23 @@ interface Resultado {
   incompleto: boolean;
 }
 
+// Data (AAAA-MM-DD) e hora (HH:MM) atuais no fuso do usuário.
+function obterAgora() {
+  const agora = new Date();
+
+  return {
+    data: agora.toLocaleDateString("en-CA"),
+    hora: agora.toTimeString().slice(0, 5),
+  };
+}
+
 function validarPeriodo(campos: Campos): Resultado {
-  const { dataRetirada, horaRetirada, dataDevolucao, horaDevolucao } = campos;
+  const {
+    dataRetirada,
+    horaRetirada,
+    dataDevolucao,
+    horaDevolucao,
+  } = campos;
 
   if (!dataRetirada || !horaRetirada || !dataDevolucao || !horaDevolucao) {
     return {
@@ -30,11 +45,20 @@ function validarPeriodo(campos: Campos): Resultado {
   const inicio = new Date(`${dataRetirada}T${horaRetirada}:00`).getTime();
   const fim = new Date(`${dataDevolucao}T${horaDevolucao}:00`).getTime();
 
-  if (inicio < Date.now()) {
+  // Ignora os segundos: retirar "agora" (no minuto atual) é permitido.
+  const agoraSemSegundos = new Date();
+  agoraSemSegundos.setSeconds(0, 0);
+
+  if (inicio < agoraSemSegundos.getTime()) {
+    const { data, hora } = obterAgora();
+
     return {
       dados: null,
       incompleto: false,
-      erro: "A retirada não pode estar no passado.",
+      erro:
+        dataRetirada === data
+          ? `Para retirada hoje, escolha um horário a partir de ${hora}.`
+          : "A retirada não pode estar no passado.",
     };
   }
 
@@ -46,10 +70,17 @@ function validarPeriodo(campos: Campos): Resultado {
     };
   }
 
-  return { dados: { ...campos }, incompleto: false, erro: "" };
+  return {
+    dados: { ...campos },
+    incompleto: false,
+    erro: "",
+  };
 }
 
-function DadosReserva({ onBuscar, onConfirmarBusca }: DadosReservaProps) {
+function DadosReserva({
+  onBuscar,
+  onConfirmarBusca,
+}: DadosReservaProps) {
   const [campos, setCampos] = useState<Campos>({
     dataRetirada: "",
     horaRetirada: "10:00",
@@ -58,11 +89,34 @@ function DadosReserva({ onBuscar, onConfirmarBusca }: DadosReservaProps) {
   });
 
   const [erro, setErro] = useState("");
-  const hoje = new Date().toLocaleDateString("en-CA");
+
+  const { data: hoje, hora: horaAtual } = obterAgora();
 
   function atualizarCampo(campo: keyof Campos, valor: string) {
-    setCampos((prev) => ({ ...prev, [campo]: valor }));
+    setCampos((prev) => {
+      const novo = { ...prev, [campo]: valor };
+
+      // Se escolheu HOJE e o horário padrão (10:00) já passou,
+      // ajusta automaticamente a hora de retirada para a hora atual.
+      if (
+        campo === "dataRetirada" &&
+        valor === hoje &&
+        novo.horaRetirada < horaAtual
+      ) {
+        novo.horaRetirada = horaAtual;
+      }
+
+      return novo;
+    });
+
     if (erro) setErro("");
+  }
+
+  // Abre o calendário nativo do navegador
+  function abrirCalendario(
+    e: React.MouseEvent<HTMLInputElement>
+  ) {
+    e.currentTarget.showPicker();
   }
 
   function handleBuscar() {
@@ -70,7 +124,7 @@ function DadosReserva({ onBuscar, onConfirmarBusca }: DadosReservaProps) {
 
     setErro(r.erro);
 
-    // Período inválido (null) também é enviado: assim a lista antiga some.
+    // Envia null quando o período é inválido.
     onBuscar(r.dados);
 
     if (r.dados) {
@@ -81,40 +135,63 @@ function DadosReserva({ onBuscar, onConfirmarBusca }: DadosReservaProps) {
   return (
     <>
       <div className="dados-reserva">
+
+        {/* Retirada */}
         <div className="campo-reserva">
-          <label htmlFor="data-retirada">Retirada</label>
+          <label htmlFor="data-retirada">
+            Retirada
+          </label>
+
           <input
             id="data-retirada"
             type="date"
             min={hoje}
             value={campos.dataRetirada}
-            onChange={(e) => atualizarCampo("dataRetirada", e.target.value)}
+            onChange={(e) =>
+              atualizarCampo("dataRetirada", e.target.value)
+            }
+            onClick={abrirCalendario}
           />
+
           <input
             type="time"
             aria-label="Horário de retirada"
+            min={campos.dataRetirada === hoje ? horaAtual : undefined}
             value={campos.horaRetirada}
-            onChange={(e) => atualizarCampo("horaRetirada", e.target.value)}
+            onChange={(e) =>
+              atualizarCampo("horaRetirada", e.target.value)
+            }
           />
         </div>
 
+        {/* Devolução */}
         <div className="campo-reserva">
-          <label htmlFor="data-devolucao">Devolução</label>
+          <label htmlFor="data-devolucao">
+            Devolução
+          </label>
+
           <input
             id="data-devolucao"
             type="date"
             min={campos.dataRetirada || hoje}
             value={campos.dataDevolucao}
-            onChange={(e) => atualizarCampo("dataDevolucao", e.target.value)}
+            onChange={(e) =>
+              atualizarCampo("dataDevolucao", e.target.value)
+            }
+            onClick={abrirCalendario}
           />
+
           <input
             type="time"
             aria-label="Horário de devolução"
             value={campos.horaDevolucao}
-            onChange={(e) => atualizarCampo("horaDevolucao", e.target.value)}
+            onChange={(e) =>
+              atualizarCampo("horaDevolucao", e.target.value)
+            }
           />
         </div>
 
+        {/* Botão de busca */}
         <button
           type="button"
           className="btn-buscar-reserva"
@@ -122,6 +199,7 @@ function DadosReserva({ onBuscar, onConfirmarBusca }: DadosReservaProps) {
         >
           Buscar veículos
         </button>
+
       </div>
 
       {erro && (

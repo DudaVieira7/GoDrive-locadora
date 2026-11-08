@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { getNomeMarca } from "../Pesquisa/DadosPesquisa";
 import type { Veiculo } from "../Pesquisa/DadosPesquisa";
 
 interface FrotaCarrosProps {
@@ -121,23 +122,23 @@ function FrotaCarros({ veiculos }: FrotaCarrosProps) {
     <FrotaContainer>
       <FrotaGrid>
         {veiculos.map((veiculo) => (
-          <CarroCard key={veiculo.id}>
+          <CarroCard key={veiculo.id_carro}>
             <CarroImagem>
               <img
                 src={veiculo.src}
-                alt={`${veiculo.marca} ${veiculo.modelo}`}
+                alt={`${getNomeMarca(veiculo.fk_id_marca)} ${veiculo.modelo}`}
               />
             </CarroImagem>
 
             <CarroConteudo>
               <CarroTitulo>
-                <span>{veiculo.marca}</span>
+                <span>{getNomeMarca(veiculo.fk_id_marca)}</span>
                 <h3>{veiculo.modelo}</h3>
               </CarroTitulo>
 
               <CarroInformacoes>
-                <span>{veiculo.ano}</span>
-                <span>{veiculo.combustivel}</span>
+                <span>{veiculo.ano_modelo}</span>
+                <span>{veiculo.tipo_combustivel}</span>
                 <span>
                   {veiculo.quilometragem.toLocaleString("pt-BR")} km
                 </span>
@@ -146,7 +147,7 @@ function FrotaCarros({ veiculos }: FrotaCarrosProps) {
               <CarroRodape>
                 <CarroPreco>
                   <strong>
-                    {veiculo.precoDiaria.toLocaleString("pt-BR", {
+                    {veiculo.preco_diaria.toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
