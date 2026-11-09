@@ -11,6 +11,7 @@ import DetalhesCarro from './pages/client/DetalhesCarro/DetalhesCarro';
 import MinhaConta from './pages/client/MinhaConta/MinhaConta';
 import './index.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Alugar from './pages/client/Alugar/Alugar';
 
 function App() {
    return (

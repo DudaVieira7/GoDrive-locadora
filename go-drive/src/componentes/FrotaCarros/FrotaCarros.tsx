@@ -159,24 +159,20 @@ function FrotaCarros({ veiculos }: FrotaCarrosProps) {
                   <span>/ diária</span>
                 </CarroPreco>
 
-                <BotaoDetalhes
-                  type="button"
-<<<<<<< HEAD
-                  onClick={() =>
-                    navigate(
-                      usuarioEstaLogado()
-                        ? `/detalhes-carro/${veiculo.id_carro}`
-                        : `/cadastro?redirect=${encodeURIComponent(
-                            `/detalhes-carro/${veiculo.id_carro}`,
-                          )}`,
-                    )
-                  }
-=======
-                  onClick={() => navigate(`/alugar/${veiculo.id_carro}`)}
->>>>>>> 06d9240 (feat: add vehicle rental page)
-                >
-                  Ver detalhes
-                </BotaoDetalhes>
+            <BotaoDetalhes
+              type="button"
+              onClick={() =>
+                navigate(
+                  usuarioEstaLogado()
+                    ? `/alugar/${veiculo.id_carro}`
+                    : `/cadastro?redirect=${encodeURIComponent(
+                        `/alugar/${veiculo.id_carro}`,
+                      )}`,
+                )
+              }
+            >
+              Alugar
+            </BotaoDetalhes>
               </CarroRodape>
             </CarroConteudo>
           </CarroCard>
