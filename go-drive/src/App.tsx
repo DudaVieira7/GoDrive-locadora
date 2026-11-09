@@ -7,6 +7,8 @@ import Cadastro from './pages/auth/Cadastro';
 import Login from './pages/auth/Login';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
+import DetalhesCarro from './pages/client/DetalhesCarro/DetalhesCarro';
+import MinhaConta from './pages/client/MinhaConta/MinhaConta';
 import './index.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
