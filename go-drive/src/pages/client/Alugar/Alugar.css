@@ -1,0 +1,353 @@
+.alugar-pagina {
+  --verde: #84ff00;
+  --header-altura: 100px; /* altura do seu Header (ajuste se for diferente) */
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: var(--header-altura); /* empurra o conteúdo para baixo do Header */
+  background: #f8f8f8;
+  color: #000;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Faixa escura atrás do Header (o texto dele é branco) */
+.alugar-pagina::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-altura);
+  background: #000;
+}
+
+/* Mantém o Header acima da faixa */
+.alugar-pagina > header,
+.alugar-pagina > nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.alugar-pagina * {
+  box-sizing: border-box;
+}
+
+.alugar-vazio {
+  padding: 40px;
+  text-align: center;
+}
+
+.alugar-conteudo {
+  flex: 1; /* ocupa toda a altura restante da página */
+  display: grid;
+  grid-template-columns: 400px minmax(0, 1fr);
+  gap: 30px;
+  align-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto; 
+  padding: 40px 30px;
+}
+
+/* ===== Card preto ===== */
+.alugar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 36px 8px 24px;
+  background: #000;
+  border-radius: 16px;
+  color: #fff;
+}
+
+.alugar-card h2 {
+  margin: 0 0 14px 22px;
+  font-family: "Orbitron", "Poppins", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ===== Caixas dos campos ===== */
+.alugar-caixa {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 62px;
+  padding: 8px 14px;
+  background: #2f2f2f;
+  border: 1px solid #555;
+  border-radius: 10px;
+  transition: border-color 0.2s ease;
+}
+
+.alugar-caixa:focus-within,
+.alugar-caixa:hover {
+  border-color: var(--verde);
+}
+
+.alugar-caixa label {
+  color: #aaa;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.alugar-caixa input {
+  height: 24px;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color-scheme: dark;
+}
+
+/* Local de retirada: texto + pin verde */
+.alugar-caixa--local {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.alugar-caixa-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.alugar-pin {
+  flex: none;
+  color: var(--verde);
+  font-size: 18px;
+}
+
+/* Data e hora lado a lado */
+.alugar-linha {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 8px;
+}
+
+.alugar-caixa--hora {
+  align-items: center;
+  text-align: center;
+}
+
+.alugar-caixa--hora input {
+  text-align: center;
+}
+
+/* ===== Toggle ===== */
+.alugar-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 2px 4px;
+  cursor: pointer;
+}
+
+.alugar-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.alugar-toggle-trilho {
+  position: relative;
+  flex: none;
+  width: 50px;
+  height: 26px;
+  background: #555;
+  border-radius: 26px;
+  transition: background 0.2s ease;
+}
+
+.alugar-toggle-trilho::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background: #d9d9d9;
+  border-radius: 50%;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.alugar-toggle input:checked + .alugar-toggle-trilho {
+  background: #3f7a00;
+}
+
+.alugar-toggle input:checked + .alugar-toggle-trilho::after {
+  transform: translateX(24px);
+  background: var(--verde);
+}
+
+.alugar-toggle input:focus-visible + .alugar-toggle-trilho {
+  outline: 2px solid var(--verde);
+  outline-offset: 2px;
+}
+
+.alugar-toggle-texto {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.alugar-erro {
+  padding: 8px 12px;
+  background: rgba(58, 20, 20, 0.9);
+  border: 1px solid #ff4d4d;
+  border-radius: 8px;
+  color: #ff9b9b;
+  font-size: 12px;
+}
+
+/* ===== Lado direito ===== */
+.alugar-detalhes {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  min-width: 0;
+  padding-top: 0;
+}
+
+.alugar-topo {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.alugar-imagem {
+  flex: none;
+  width: 170px;
+  height: 128px;
+  overflow: hidden;
+  background: #f5f5f5;
+  border-radius: 14px;
+}
+
+.alugar-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.alugar-resumo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.alugar-resumo h1 {
+  margin: 4px 0 0;
+  font-family: "Orbitron", "Poppins", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.alugar-precos {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.alugar-precos p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.alugar-precos strong {
+  display: block;
+  color: var(--verde);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.alugar-precos span {
+  color: var(--verde);
+}
+
+/* ===== Descrição + botão alugar ===== */
+.alugar-base {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 225px;
+  gap: 20px;
+  align-items: end;
+}
+
+.alugar-descricao {
+  min-height: 245px;
+  padding: 20px 26px;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 16px;
+}
+
+.alugar-descricao h3 {
+  margin: 0 0 24px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.alugar-descricao ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 22px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 900px) {
+  .alugar-conteudo {
+    grid-template-columns: 1fr;
+    padding: 24px 20px 40px;
+  }
+
+  .alugar-card {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+}
+
+@media (max-width: 650px) {
+  .alugar-topo {
+    flex-direction: column;
+  }
+
+  .alugar-imagem {
+    width: 100%;
+    height: 200px;
+  }
+
+  .alugar-resumo {
+    width: 100%;
+  }
+
+  .alugar-base {
+    grid-template-columns: 1fr;
+  }
+}

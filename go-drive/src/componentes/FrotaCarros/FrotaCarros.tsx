@@ -161,6 +161,7 @@ function FrotaCarros({ veiculos }: FrotaCarrosProps) {
 
                 <BotaoDetalhes
                   type="button"
+<<<<<<< HEAD
                   onClick={() =>
                     navigate(
                       usuarioEstaLogado()
@@ -170,6 +171,9 @@ function FrotaCarros({ veiculos }: FrotaCarrosProps) {
                           )}`,
                     )
                   }
+=======
+                  onClick={() => navigate(`/alugar/${veiculo.id_carro}`)}
+>>>>>>> 06d9240 (feat: add vehicle rental page)
                 >
                   Ver detalhes
                 </BotaoDetalhes>

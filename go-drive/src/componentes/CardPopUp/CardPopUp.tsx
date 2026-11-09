@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import type { ReactNode } from 'react'
-import logo from '../../assets/goDrive_logoBranca.png'
+
 
 const CardContainer = styled.section<{ $maxWidth: string; $padding: string }>`
   background:
@@ -42,12 +42,7 @@ const CardContainer = styled.section<{ $maxWidth: string; $padding: string }>`
 
 
 
-const Logo = styled.img`
-width: 160px;
-height: 50px;
-object-fit: cover;
 
-`
 
 interface CardPopUpProps {
   children: ReactNode;
@@ -58,7 +53,7 @@ interface CardPopUpProps {
 function CardPopUp({ children, maxWidth = '700px', padding = '40px' }: CardPopUpProps) {
   return (
     <CardContainer $maxWidth={maxWidth} $padding={padding}>
-      <Logo src={logo}/>
+      
       <div>{children}</div>
     </CardContainer>
   );
