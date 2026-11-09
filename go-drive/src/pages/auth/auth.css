@@ -29,6 +29,24 @@ body {
     gap: 20px;
 }
 
+.auth-form {
+    width: 100%;
+}
+
+.auth-error {
+    width: 100%;
+    color: #ff8c8c;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.auth-demo-note {
+    width: 100%;
+    color: #d9d9d9b2;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
 .card-title{
     color: #e5e4e2a9;
     font-weight: 400;

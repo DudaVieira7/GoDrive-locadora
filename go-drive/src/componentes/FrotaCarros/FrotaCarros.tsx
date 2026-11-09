@@ -1,6 +1,8 @@
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import { getNomeMarca } from "../Pesquisa/DadosPesquisa";
 import type { Veiculo } from "../Pesquisa/DadosPesquisa";
+import { usuarioEstaLogado } from "../../utils/auth";
 
 interface FrotaCarrosProps {
   veiculos: Veiculo[];
@@ -118,6 +120,8 @@ const BotaoDetalhes = styled.button`
 `;
 
 function FrotaCarros({ veiculos }: FrotaCarrosProps) {
+  const navigate = useNavigate();
+
   return (
     <FrotaContainer>
       <FrotaGrid>
@@ -155,7 +159,18 @@ function FrotaCarros({ veiculos }: FrotaCarrosProps) {
                   <span>/ diária</span>
                 </CarroPreco>
 
-                <BotaoDetalhes type="button">
+                <BotaoDetalhes
+                  type="button"
+                  onClick={() =>
+                    navigate(
+                      usuarioEstaLogado()
+                        ? `/detalhes-carro/${veiculo.id_carro}`
+                        : `/cadastro?redirect=${encodeURIComponent(
+                            `/detalhes-carro/${veiculo.id_carro}`,
+                          )}`,
+                    )
+                  }
+                >
                   Ver detalhes
                 </BotaoDetalhes>
               </CarroRodape>

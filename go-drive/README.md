@@ -30,3 +30,9 @@ If you are developing a production application, we recommend enabling type-aware
 ```
 
 See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+
+## Fluxo de conta (protótipo)
+
+O cadastro, login, perfil e solicitações de aluguel deste protótipo ficam no `localStorage` do navegador. As senhas são armazenadas como hashes PBKDF2, mas a autenticação continua sendo controlada pelo cliente e não deve ser usada em produção. Para isso, substitua o armazenamento local por uma API com validação e sessão no servidor.
+
+Para testar, abra `/frota`, escolha **Ver detalhes**, crie uma conta e confirme que o app retorna ao veículo escolhido. O botão **Alugar** cria uma solicitação local, disponível em **Minha conta > Minhas reservas**. A sessão e os dados ficam restritos ao mesmo navegador.

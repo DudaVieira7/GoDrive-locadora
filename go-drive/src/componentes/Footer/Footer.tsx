@@ -27,7 +27,7 @@ function Footer() {
 
           <div className="footer-column">
             <h3 className="footerTitle">Contato</h3>
-            <p className="footerContact">Email: contato@godriveoficial.com</p>
+            <p className="footerContact">Email: contato.godriveoficial@gmail.com</p>
           </div>
 
           <div className="footer-column footer-actions">
