@@ -67,6 +67,8 @@
   gap: 6px;
   margin-bottom: 32px;
   font-family:  Poppins;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .conta-nav-link {
@@ -94,11 +96,11 @@
 }
 
 .conta-badge-count {
-  font-size: 11px;
+  font-size: 10px;
   background: #000;
   color: var(--verde);
   padding: 2px 7px;
-  border-radius: 999px;
+  border-radius: 50%;
   font-weight: 700;
 }
 
@@ -193,6 +195,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
+  
 }
 
 .stat-card {
@@ -200,9 +203,11 @@
   border: 1px solid #e3e3e3;
   border-radius: 16px;
   padding: 20px 24px;
+  gap: 15px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .stat-content span {
@@ -213,6 +218,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 6px;
+ 
 }
 
 .stat-content strong {
@@ -504,23 +510,9 @@
   cursor: not-allowed;
 }
 
-.btn-salvar-alugar {
-  grid-column: 1 / -1;
-  height: 54px;
-  background: var(--verde);
-  color: #000;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.2s ease;
-}
 
-.btn-salvar-alugar:hover {
-  background: #70db00;
-}
+
+
 
 .conta-mensagem {
   grid-column: 1 / -1;
@@ -555,6 +547,16 @@
   .reserva-meta-info {
     flex-direction: column;
     gap: 12px;
+  }
+}
+
+
+@media (max-width: 470px){
+  .conta-navegacao {
+    border-radius: 20px;
+  }
+  h1{
+    text-align: center;
   }
 }
 

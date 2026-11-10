@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import './Header.css';
@@ -25,6 +25,7 @@ function Header() {
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPerfilOpen, setIsPerfilOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,9 +39,26 @@ function Header() {
     };
   }, []);
 
-  // Com o menu aberto o header também fica branco,
+  // Com qualquer painel aberto o header também fica branco,
   // senão os links brancos sumiriam no painel branco
-  const isActive = isHovered || isScrolled || isMenuOpen;
+  const isActive = isHovered || isScrolled || isMenuOpen || isPerfilOpen;
+
+  const closeAll = useCallback(() => {
+    setIsMenuOpen(false);
+    setIsPerfilOpen(false);
+  }, []);
+
+  const closePerfil = useCallback(() => setIsPerfilOpen(false), []);
+
+  const togglePerfil = () => {
+    setIsPerfilOpen((open) => !open);
+    setIsMenuOpen(false);
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen((open) => !open);
+    setIsPerfilOpen(false);
+  };
 
   return (
     <HeaderContainer
@@ -54,16 +72,23 @@ function Header() {
         isHovered={isActive}
         isOpen={isMenuOpen}
         onHoverChange={setIsHovered}
-        onLinkClick={() => setIsMenuOpen(false)}
+        onLinkClick={closeAll}
       />
 
       <div className="headerRight">
-        <HeaderPerfil isHovered={isActive} />
+        <HeaderPerfil
+          isHovered={isActive}
+          isOpen={isPerfilOpen}
+          onHoverChange={setIsHovered}
+          onToggle={togglePerfil}
+          onClose={closePerfil}
+          onLinkClick={closeAll}
+        />
 
         <MenuButton
           className="menuButton"
           $isActive={isActive}
-          onClick={() => setIsMenuOpen((open) => !open)}
+          onClick={toggleMenu}
           aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
           aria-expanded={isMenuOpen}
         >
