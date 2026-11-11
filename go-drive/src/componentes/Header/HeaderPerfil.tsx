@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import {
   FaAddressCard,
@@ -22,6 +21,11 @@ import type { Usuario } from "../../utils/auth";
 
 interface HeaderPerfilProps {
   isHovered: boolean;
+  isOpen: boolean;
+  onHoverChange: (hovered: boolean) => void;
+  onToggle: () => void;
+  onClose: () => void;
+  onLinkClick: () => void;
 }
 
 function IconePino({ cor }: { cor: string }) {
@@ -35,6 +39,11 @@ function IconePino({ cor }: { cor: string }) {
 
 const Wrapper = styled.div`
   position: relative;
+
+  @media (max-width: 900px) {
+    /* sem position aqui, o Dropdown se ancora no header */
+    position: static;
+  }
 `;
 
 const EntrarPerfil = styled.div`
@@ -65,7 +74,8 @@ const CirculoPerfil = styled.button<{ $isHovered: boolean }>`
 
     background: ${({ $isHovered }) =>
       $isHovered ? "#000000" : "#FFFFFF"};
-
+      font-weight: 300;
+      font-size: 1rem;
     transition: background 0.3s ease;
   }
 `;
@@ -125,6 +135,19 @@ const Dropdown = styled.div`
 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   z-index: 1100;
+
+  @media (max-width: 900px) {
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+    padding: 8px 0 16px;
+
+    border-top: 1px solid #eeeeee;
+    border-radius: 0;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  }
 `;
 
 const DropdownTitle = styled.h2`
@@ -134,6 +157,10 @@ const DropdownTitle = styled.h2`
   font-size: 1.2rem;
   font-weight: 500;
   font-family: "Science Gothic Variable";
+
+  @media (max-width: 900px) {
+    display: none;
+  }
 `;
 
 const DropdownItem = styled(Link)`
@@ -166,6 +193,24 @@ const DropdownItem = styled(Link)`
     color: #999999;
     font-size: 22px;
   }
+
+  @media (max-width: 900px) {
+    margin-top: 0;
+    padding: 14px 37px;
+    min-height: auto;
+
+    border: none;
+    border-radius: 0;
+    background: transparent;
+
+    &:hover {
+      background: transparent;
+    }
+
+    svg {
+      display: none;
+    }
+  }
 `;
 
 const ItemText = styled.span`
@@ -182,6 +227,18 @@ const ItemText = styled.span`
   small {
     color: #aba4a4;
     font-size: 0.7rem;
+  }
+
+  @media (max-width: 900px) {
+    strong {
+      color: #000000;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    small {
+      display: none;
+    }
   }
 `;
 
@@ -210,11 +267,27 @@ const LogoutButton = styled.button`
   &:hover {
     color: #a32121;
   }
+
+  @media (max-width: 900px) {
+    margin-top: 0;
+    padding: 14px 37px;
+    font-size: 1.1rem;
+    font-weight: 400;
+
+    svg {
+      display: none;
+    }
+  }
 `;
 
-function HeaderPerfil({ isHovered }: HeaderPerfilProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
+function HeaderPerfil({
+  isHovered,
+  isOpen,
+  onHoverChange,
+  onToggle,
+  onClose,
+  onLinkClick,
+}: HeaderPerfilProps) {
   const [usuario, setUsuario] = useState<Usuario | null>(
     getUsuarioAtual
   );
@@ -227,12 +300,14 @@ function HeaderPerfil({ isHovered }: HeaderPerfilProps) {
   }, []);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&
         !wrapperRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
+        onClose();
       }
     };
 
@@ -241,23 +316,24 @@ function HeaderPerfil({ isHovered }: HeaderPerfilProps) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
-
-  const closeMenu = () => setIsOpen(false);
+  }, [isOpen, onClose]);
 
   function handleLogout() {
     sairDaConta();
-    closeMenu();
+    onLinkClick();
     navigate("/");
   }
 
   return (
-    <Wrapper ref={wrapperRef}>
+    <Wrapper
+      ref={wrapperRef}
+      onMouseEnter={() => onHoverChange(true)}
+    >
       <EntrarPerfil>
         <CirculoPerfil
           type="button"
           $isHovered={isHovered}
-          onClick={() => setIsOpen((open) => !open)}
+          onClick={onToggle}
           aria-label="Abrir menu da conta"
           aria-expanded={isOpen}
         >
@@ -274,7 +350,7 @@ function HeaderPerfil({ isHovered }: HeaderPerfilProps) {
         <TextoEntrar
           type="button"
           $isHovered={isHovered}
-          onClick={() => setIsOpen((open) => !open)}
+          onClick={onToggle}
         >
           {usuario?.nomeUsuario ?? "Entrar"}
         </TextoEntrar>
@@ -288,7 +364,7 @@ function HeaderPerfil({ isHovered }: HeaderPerfilProps) {
             <>
               <DropdownItem
                 to="/minha-conta?secao=reservas"
-                onClick={closeMenu}
+                onClick={onLinkClick}
               >
                 <ItemText>
                   <strong>Minhas reservas</strong>
@@ -299,7 +375,7 @@ function HeaderPerfil({ isHovered }: HeaderPerfilProps) {
 
               <DropdownItem
                 to="/minha-conta?secao=dados"
-                onClick={closeMenu}
+                onClick={onLinkClick}
               >
                 <ItemText>
                   <strong>Meus dados</strong>
@@ -310,7 +386,7 @@ function HeaderPerfil({ isHovered }: HeaderPerfilProps) {
 
               <DropdownItem
                 to="/minha-conta?secao=visao-geral"
-                onClick={closeMenu}
+                onClick={onLinkClick}
               >
                 <ItemText>
                   <strong>Visão geral</strong>
@@ -319,23 +395,20 @@ function HeaderPerfil({ isHovered }: HeaderPerfilProps) {
                 <FaChartPie />
               </DropdownItem>
 
-              <LogoutButton
-                type="button"
-                onClick={handleLogout}
-              >
+              <LogoutButton type="button" onClick={handleLogout}>
                 <FaSignOutAlt />
                 Sair da conta
               </LogoutButton>
             </>
           ) : (
             <>
-              <DropdownItem to="/login" onClick={closeMenu}>
+              <DropdownItem to="/login" onClick={onLinkClick}>
                 <ItemText>
                   <strong>Entrar</strong>
                 </ItemText>
               </DropdownItem>
 
-              <DropdownItem to="/cadastro" onClick={closeMenu}>
+              <DropdownItem to="/cadastro" onClick={onLinkClick}>
                 <ItemText>
                   <strong>Criar conta</strong>
                 </ItemText>
