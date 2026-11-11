@@ -202,7 +202,7 @@ function MinhaConta() {
                   </div>
                 </div>
                 <Link className="btn-acao-preto" to="/minha-conta?secao=reservas">
-                  Ver Detalhes completos
+                  Ver Detalhes Completos
                 </Link>
               </div>
             </div>
