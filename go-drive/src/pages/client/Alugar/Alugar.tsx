@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { IoLocationSharp } from "react-icons/io5";
 
 import Header from "../../../componentes/Header/Header";
 import Button from "../../../componentes/Button/Button";
+import { getUsuarioAtual, solicitarAluguel } from "../../../utils/auth";
 
 import {
   veiculos,
@@ -42,8 +43,9 @@ const moeda = (valor: number) =>
   valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 function Alugar() {
- 
   const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const veiculo = useMemo(
     () => veiculos.find((v) => String(v.id_carro) === id) ?? veiculos[0],
@@ -72,7 +74,7 @@ function Alugar() {
     if (erro) setErro("");
   }
 
-  function aplicar() {
+  function validarCampos(): Periodo | null {
     const inicio = new Date(
       `${campos.dataRetirada}T${campos.horaRetirada}:00`
     ).getTime();
@@ -87,26 +89,61 @@ function Alugar() {
       Number.isNaN(fim)
     ) {
       setErro("Informe as datas e os horários.");
-      return;
+      return null;
     }
 
     if (fim <= inicio) {
       setErro("A devolução deve ser posterior à retirada.");
-      return;
+      return null;
+    }
+
+    const agora = new Date();
+    agora.setSeconds(0, 0);
+    if (inicio < agora.getTime()) {
+      setErro("A retirada não pode estar no passado.");
+      return null;
     }
 
     setErro("");
-    setPeriodo({ ...campos });
+    return { ...campos };
+  }
+
+  function aplicar() {
+    const periodoValido = validarCampos();
+    if (periodoValido) setPeriodo(periodoValido);
   }
 
   function alugar() {
-    
-    console.log("Reserva", {
-      veiculo: veiculo?.id_carro,
-      localRetirada,
-      localDevolucao: outroDestino ? localDevolucao : localRetirada,
-      ...periodo,
-    });
+    if (!getUsuarioAtual()) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+
+    const periodoReserva = validarCampos();
+    if (!periodoReserva) return;
+
+    const destinoDevolucao = outroDestino ? localDevolucao : localRetirada;
+    if (!localRetirada.trim() || !destinoDevolucao.trim()) {
+      setErro("Informe os locais de retirada e devolução.");
+      return;
+    }
+
+    try {
+      solicitarAluguel({
+        idCarro: veiculo.id_carro,
+        localRetirada,
+        localDevolucao: destinoDevolucao,
+        ...periodoReserva,
+        total: calcularDiarias(periodoReserva) * veiculo.preco_diaria,
+      });
+      navigate("/minha-conta?secao=reservas");
+    } catch (error) {
+      setErro(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível registrar a reserva.",
+      );
+    }
   }
 
   if (!veiculo) {

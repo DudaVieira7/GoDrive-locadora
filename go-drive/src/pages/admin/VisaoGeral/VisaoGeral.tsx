@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { ReactElement } from "react";
+import AdminLayout from "../../../componentes/AdminLayout/AdminLayout";
+import { listarFuncionarios, subscribeAuth } from "../../../utils/auth";
 import Grafico from "./Grafico";
-import { ABAS_DADOS, METRICAS_DADOS, PERIODOS, obterDados } from "./Visaogeraldados";
-import type { Aba, MetricaDados, MetricaId, Periodo } from "./Visaogeraldados";
-import Logo from '../../../assets/goDrive_logoBranca.png'
+import { METRICAS_DADOS, PERIODOS, obterDados } from "./visaoGeralDados";
+import type { MetricaDados, MetricaId, Periodo } from "./visaoGeralDados";
 import "./VisaoGeral.css";
 
+/* topbar, título e abas vêm do AdminLayout (mesma casca de antes) */
 
 interface Metrica extends MetricaDados {
   Icone: () => ReactElement;
@@ -45,26 +47,6 @@ const IconeLucro = () => (
   </svg>
 );
 
-const IconeGrade = () => (
-  <svg {...svgProps} width={16} height={16}>
-    <path d="M3 3h8v8H3V3zm10 0h8v5h-8V3zM3 13h8v8H3v-8zm10-3h8v11h-8V10z" />
-  </svg>
-);
-
-const IconeLogs = () => (
-  <svg {...svgProps} width={16} height={16}>
-    <path d="M3 5h14v2H3V5zm0 4h14v2H3V9zm0 4h8v2H3v-2zm12 0a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm-.8 2v3.2l2.4 1.4.8-1.3-1.8-1V15h-1.4z" />
-  </svg>
-);
-
-const IconeWorkers = () => (
-  <svg {...svgProps} width={16} height={16}>
-    <circle cx="9" cy="6" r="3.2" />
-    <path d="M3 20v-5a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v5H3zm13-7h5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-5v-8z" />
-  </svg>
-);
-
-
 /* ==========================================================================
    LIGAÇÃO DOS DADOS COM OS ÍCONES
 ========================================================================== */
@@ -75,114 +57,81 @@ const ICONES_METRICA: Record<MetricaId, () => ReactElement> = {
   lucro: IconeLucro,
 };
 
-const ICONES_ABA: Record<Aba, () => ReactElement> = {
-  geral: IconeGrade,
-  logs: IconeLogs,
-  workers: IconeWorkers,
-};
-
-const METRICAS: Metrica[] = METRICAS_DADOS.map((m) => ({ ...m, Icone: ICONES_METRICA[m.id] }));
-
-const ABAS = ABAS_DADOS.map((a) => ({ ...a, Icone: ICONES_ABA[a.id] }));
-
 /* ==========================================================================
    PÁGINA
 ========================================================================== */
 function VisaoGeral() {
-  const [aba, setAba] = useState<Aba>("geral");
   const [metricaId, setMetricaId] = useState<MetricaId>("lucro");
   const [periodo, setPeriodo] = useState<Periodo>("1M");
+  const numeroFuncionarios = useSyncExternalStore(
+    subscribeAuth,
+    () => listarFuncionarios().length.toLocaleString("pt-BR"),
+    () => "0",
+  );
+  const metricas: Metrica[] = METRICAS_DADOS.map((metrica) => ({
+    ...metrica,
+    valor: metrica.id === "funcionarios" ? numeroFuncionarios : metrica.valor,
+    Icone: ICONES_METRICA[metrica.id],
+  }));
 
-  const metrica = METRICAS.find((x) => x.id === metricaId) ?? (METRICAS[0] as Metrica);
+  const metrica = metricas.find((x) => x.id === metricaId) ?? metricas[0];
 
   return (
-    <div className="admin-pagina">
-      {/* ===== Barra superior ===== */}
-      
-        <header className="admin-topbar">
-        <img src={Logo} alt="goDrive" className="Logo" />
-        <p className="admin-topbar-texto">Admin Analytics</p>
-        </header>
-      <div className="admin-painel">
-        <h1 className="admin-titulo">Área do Administrador</h1>
-
-        {/* ===== Abas ===== */}
-        <nav className="admin-abas" aria-label="Seções do painel">
-          {ABAS.map(({ id, rotulo, Icone }) => (
+    <AdminLayout>
+      {/* ===== Células (KPIs clicáveis) ===== */}
+      <section className="admin-kpis" aria-label="Indicadores">
+        {metricas.map((k) => {
+          const selecionada = k.id === metricaId;
+          return (
             <button
-              key={id}
+              key={k.id}
               type="button"
-              className={aba === id ? "admin-aba ativa" : "admin-aba"}
-              aria-current={aba === id ? "page" : undefined}
-              onClick={() => setAba(id)}
+              className={selecionada ? "admin-kpi-card ativo" : "admin-kpi-card"}
+              aria-pressed={selecionada}
+              onClick={() => setMetricaId(k.id)}
             >
-              <Icone />
-              {rotulo}
-            </button>
-          ))}
-        </nav>
-
-        {aba !== "geral" ? (
-          <div className="admin-vazio">Esta seção ainda está em construção.</div>
-        ) : (
-          <>
-            {/* ===== Células (KPIs clicáveis) ===== */}
-            <section className="admin-kpis" aria-label="Indicadores">
-              {METRICAS.map((k) => {
-                const selecionada = k.id === metricaId;
-                return (
-                  <button
-                    key={k.id}
-                    type="button"
-                    className={selecionada ? "admin-kpi-card ativo" : "admin-kpi-card"}
-                    aria-pressed={selecionada}
-                    onClick={() => setMetricaId(k.id)}
-                  >
-                    <div className="admin-kpi-texto">
-                      <span className="admin-kpi-titulo">{k.titulo}</span>
-                      <strong className="admin-kpi-valor">{k.valor}</strong>
-                    </div>
-                    <span className="admin-kpi-icone">
-                      <k.Icone />
-                    </span>
-                  </button>
-                );
-              })}
-            </section>
-
-            {/* ===== Gráfico da célula selecionada ===== */}
-            <section className="admin-grafico-card">
-              <div className="admin-grafico-header">
-                <div>
-                  <h2>{metrica.tituloGrafico}</h2>
-                  <p>{metrica.descricao}</p>
-                </div>
-
-                <div className="admin-periodos" role="group" aria-label="Período do gráfico">
-                  {PERIODOS.map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      className={periodo === p ? "admin-periodo ativo" : "admin-periodo"}
-                      aria-pressed={periodo === p}
-                      onClick={() => setPeriodo(p)}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
+              <div className="admin-kpi-texto">
+                <span className="admin-kpi-titulo">{k.titulo}</span>
+                <strong className="admin-kpi-valor">{k.valor}</strong>
               </div>
+              <span className="admin-kpi-icone">
+                <k.Icone />
+              </span>
+            </button>
+          );
+        })}
+      </section>
 
-              <Grafico
-                key={`${metrica.id}-${periodo}`}
-                dados={obterDados(metrica, periodo)}
-                metrica={metrica}
-              />
-            </section>
-          </>
-        )}
-      </div>
-    </div>
+      {/* ===== Gráfico da célula selecionada ===== */}
+      <section className="admin-grafico-card">
+        <div className="admin-grafico-header">
+          <div>
+            <h2>{metrica.tituloGrafico}</h2>
+            <p>{metrica.descricao}</p>
+          </div>
+
+          <div className="admin-periodos" role="group" aria-label="Período do gráfico">
+            {PERIODOS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                className={periodo === p ? "admin-periodo ativo" : "admin-periodo"}
+                aria-pressed={periodo === p}
+                onClick={() => setPeriodo(p)}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <Grafico
+          key={`${metrica.id}-${periodo}`}
+          dados={obterDados(metrica, periodo)}
+          metrica={metrica}
+        />
+      </section>
+    </AdminLayout>
   );
 }
 

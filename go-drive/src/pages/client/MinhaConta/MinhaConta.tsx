@@ -21,9 +21,14 @@ import Footer from "../../../componentes/Footer/Footer";
 import Header from "../../../componentes/Header/Header";
 import Input from "../../../componentes/Input/Input";
 import Button from "../../../componentes/Button/Button";
-import { veiculos } from "../../../componentes/Pesquisa/DadosPesquisa";
+import {
+  getNomeCategoria,
+  getNomeMarca,
+  veiculos,
+} from "../../../componentes/Pesquisa/DadosPesquisa";
 import {
   atualizarPerfil,
+  cancelarReserva,
   getReservasDoUsuario,
   getUsuarioAtual,
 } from "../../../utils/auth";
@@ -41,15 +46,55 @@ function isSecaoConta(value: string | null): value is SecaoConta {
   return value === "visao-geral" || value === "reservas" || value === "dados";
 }
 
+function statusDaReserva(reserva: ReservaUsuario) {
+  if (reserva.status === "Cancelada") return "Cancelada";
+  if (!reserva.dataRetirada || !reserva.horaRetirada ||
+      !reserva.dataDevolucao || !reserva.horaDevolucao) {
+    return "Solicitada";
+  }
+
+  const inicio = new Date(
+    `${reserva.dataRetirada}T${reserva.horaRetirada}:00`,
+  ).getTime();
+  const fim = new Date(
+    `${reserva.dataDevolucao}T${reserva.horaDevolucao}:00`,
+  ).getTime();
+  if (Number.isNaN(inicio) || Number.isNaN(fim)) return "Solicitada";
+  if (fim <= Date.now()) return "Concluída";
+  if (inicio <= Date.now()) return "Em andamento";
+  return "Agendada";
+}
+
+function reservaEstaAtiva(reserva: ReservaUsuario) {
+  const status = statusDaReserva(reserva);
+  return status !== "Cancelada" && status !== "Concluída";
+}
+
+function formatarDataHora(data?: string, hora?: string) {
+  if (!data || !hora) return "Não informado";
+  const timestamp = new Date(`${data}T${hora}:00`);
+  if (Number.isNaN(timestamp.getTime())) return "Não informado";
+  return `${timestamp.toLocaleDateString("pt-BR")} às ${hora}`;
+}
+
+const moeda = (valor: number) =>
+  valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
 function MinhaConta() {
   const [searchParams] = useSearchParams();
   const [usuario, setUsuario] = useState<UsuarioComCnhExt | null>(getUsuarioAtual);
-  const [reservas] = useState<ReservaUsuario[]>(getReservasDoUsuario);
+  const [reservas, setReservas] = useState<ReservaUsuario[]>(getReservasDoUsuario);
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
+  const [erroReserva, setErroReserva] = useState("");
   
   const secaoParam = searchParams.get("secao");
   const secao: SecaoConta = isSecaoConta(secaoParam) ? secaoParam : "visao-geral";
+  const reservasAtivas = reservas.filter(reservaEstaAtiva);
+  const reservaEmDestaque = reservasAtivas[0];
+  const veiculoEmDestaque = reservaEmDestaque
+    ? veiculos.find((item) => item.id_carro === reservaEmDestaque.idCarro)
+    : undefined;
 
   if (!usuario) {
     return <Navigate to="/login?redirect=%2Fminha-conta" replace />;
@@ -86,6 +131,20 @@ function MinhaConta() {
     }
   }
 
+  function handleCancelReservation(id: string) {
+    setErroReserva("");
+    try {
+      cancelarReserva(id);
+      setReservas(getReservasDoUsuario());
+    } catch (error) {
+      setErroReserva(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível cancelar a reserva.",
+      );
+    }
+  }
+
   const navigation = [
     { id: "visao-geral" as SecaoConta, label: "Visão Geral", icon: <HiOutlineViewGrid /> },
     { id: "reservas" as SecaoConta, label: "Minhas Reservas", icon: <HiOutlineTruck /> },
@@ -110,7 +169,7 @@ function MinhaConta() {
               {item.label}
               {item.id === "reservas" && (
                 <span className="conta-badge-count">
-                  {reservas.length > 0 ? reservas.length : 3}
+                  {reservas.length}
                 </span>
               )}
             </Link>
@@ -140,7 +199,7 @@ function MinhaConta() {
               <div className="stat-card">
                 <div className="stat-content">
                   <span>Total de Aluguéis</span>
-                  <strong>12</strong>
+                  <strong>{reservas.length}</strong>
                 </div>
                 <div className="stat-icon">
                   <HiKey />
@@ -149,7 +208,7 @@ function MinhaConta() {
               <div className="stat-card">
                 <div className="stat-content">
                   <span>Reserva Ativa</span>
-                  <strong>{reservas.length > 0 ? reservas.length : 1}</strong>
+                  <strong>{reservasAtivas.length}</strong>
                 </div>
                 <div className="stat-icon">
                   <HiOutlineTruck />
@@ -177,35 +236,66 @@ function MinhaConta() {
               </div>
             </div>
 
-            <div className="card-sessao-bloco">
-              <div className="card-sessao-header">
-                <span className="status-andamento">Reserva em Andamento</span>
-                <span className="badge-retirado">Retirado</span>
+            {reservaEmDestaque ? (
+              <div className="card-sessao-bloco">
+                <div className="card-sessao-header">
+                  <span className="status-andamento">
+                    Reserva {statusDaReserva(reservaEmDestaque).toLowerCase()}
+                  </span>
+                  <span className="badge-retirado">
+                    {statusDaReserva(reservaEmDestaque)}
+                  </span>
+                </div>
+
+                <div className="reserva-card-corpo">
+                  <div className="reserva-carro-info">
+                    {veiculoEmDestaque && (
+                      <img
+                        src={veiculoEmDestaque.src}
+                        alt={`${getNomeMarca(veiculoEmDestaque.fk_id_marca)} ${veiculoEmDestaque.modelo}`}
+                      />
+                    )}
+                    <div>
+                      <h3>
+                        {veiculoEmDestaque
+                          ? `${getNomeMarca(veiculoEmDestaque.fk_id_marca)} ${veiculoEmDestaque.modelo}`
+                          : `Veículo #${reservaEmDestaque.idCarro}`}
+                      </h3>
+                      <p>
+                        {veiculoEmDestaque
+                          ? `Categoria ${getNomeCategoria(veiculoEmDestaque.fk_categoria)}`
+                          : "Veículo reservado"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="reserva-meta-info">
+                    <div className="meta-item">
+                      <span>Devolução:</span>
+                      <strong>
+                        {formatarDataHora(
+                          reservaEmDestaque.dataDevolucao,
+                          reservaEmDestaque.horaDevolucao,
+                        )}
+                      </strong>
+                    </div>
+                    <div className="meta-item">
+                      <span>Local:</span>
+                      <strong>{reservaEmDestaque.localDevolucao || "Não informado"}</strong>
+                    </div>
+                  </div>
+                  <Link className="btn-acao-preto" to="/minha-conta?secao=reservas">
+                    Ver Minhas Reservas
+                  </Link>
+                </div>
               </div>
-              
-              <div className="reserva-card-corpo">
-                <div className="reserva-carro-info">
-                  <img src={veiculos[0]?.src} alt="Fiat Argo" />
-                  <div>
-                    <h3>Fiat Argo</h3>
-                    <p>Placa: ABC-1D23 • Categoria Econômico</p>
-                  </div>
-                </div>
-                <div className="reserva-meta-info">
-                  <div className="meta-item">
-                    <span>Devolução:</span>
-                    <strong>17/11/2026 às 10:00</strong>
-                  </div>
-                  <div className="meta-item">
-                    <span>Local:</span>
-                    <strong>Porto</strong>
-                  </div>
-                </div>
+            ) : (
+              <div className="card-sessao-bloco">
+                <p className="conta-reservas-vazio">Você não tem reservas ativas.</p>
                 <Link className="btn-acao-preto" to="/minha-conta?secao=reservas">
-                  Ver Detalhes Completos
+                  Ver Minhas Reservas
                 </Link>
               </div>
-            </div>
+            )}
           </section>
         )}
 
@@ -213,37 +303,98 @@ function MinhaConta() {
           <section className="conta-painel">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h2 style={{ fontFamily: "Orbitron, Poppins, sans-serif", fontSize: "1.3rem", fontWeight: 700 }}>Minhas Reservas</h2>
-              <span style={{ color: "#777777", fontSize: "0.85rem" }}>Exibindo 3 veículos</span>
+              <span style={{ color: "#777777", fontSize: "0.85rem" }}>
+                {reservas.length} {reservas.length === 1 ? "reserva" : "reservas"}
+              </span>
             </div>
 
+            {erroReserva && (
+              <p className="conta-mensagem erro" role="alert">{erroReserva}</p>
+            )}
+
             <div className="reservas-lista-completa">
-              <div className="reserva-card-item">
-                <div className="reserva-card-top">
-                  <span className="badge-status em-andamento">Em andamento</span>
-                  <span className="reserva-codigo">Cód: #GD-89241</span>
-                  <span className="reserva-total">Total: <strong>R$ 770,00</strong></span>
-                </div>
-                <div className="reserva-card-corpo">
-                  <div className="reserva-carro-info">
-                    <img src={veiculos[0]?.src} alt="Fiat Argo" />
-                    <div>
-                      <h3>Fiat Argo</h3>
-                      <p>Ano 2023 • Flex • Econômico</p>
-                    </div>
-                  </div>
-                  <div className="reserva-meta-info">
-                    <div className="meta-item">
-                      <span>Retirada</span>
-                      <strong>10/11/2026 - 10:00<br/><span style={{color:"#777", fontWeight:"normal"}}>Porto</span></strong>
-                    </div>
-                    <div className="meta-item">
-                      <span>Devolução</span>
-                      <strong>17/11/2026 - 10:00<br/><span style={{color:"#777", fontWeight:"normal"}}>Porto</span></strong>
-                    </div>
-                  </div>
-                  <button className="btn-acao-preto">Comprovante</button>
-                </div>
-              </div>
+              {reservas.length === 0 ? (
+                <p className="conta-reservas-vazio">Você ainda não fez nenhuma reserva.</p>
+              ) : (
+                reservas.map((reserva) => {
+                  const veiculo = veiculos.find(
+                    (item) => item.id_carro === reserva.idCarro,
+                  );
+                  const status = statusDaReserva(reserva);
+                  const classeStatus = status
+                    .toLowerCase()
+                    .replaceAll(" ", "-");
+
+                  return (
+                    <article className="reserva-card-item" key={reserva.id}>
+                      <div className="reserva-card-top">
+                        <span className={`badge-status ${classeStatus}`}>
+                          {status}
+                        </span>
+                        <span className="reserva-codigo">
+                          Cód: #{reserva.id.slice(0, 8).toUpperCase()}
+                        </span>
+                        <span className="reserva-total">
+                          Total: <strong>{reserva.total !== undefined ? moeda(reserva.total) : "—"}</strong>
+                        </span>
+                      </div>
+                      <div className="reserva-card-corpo">
+                        <div className="reserva-carro-info">
+                          {veiculo && (
+                            <img
+                              src={veiculo.src}
+                              alt={`${getNomeMarca(veiculo.fk_id_marca)} ${veiculo.modelo}`}
+                            />
+                          )}
+                          <div>
+                            <h3>
+                              {veiculo
+                                ? `${getNomeMarca(veiculo.fk_id_marca)} ${veiculo.modelo}`
+                                : `Veículo #${reserva.idCarro}`}
+                            </h3>
+                            <p>
+                              {veiculo
+                                ? `Ano ${veiculo.ano_modelo} • ${veiculo.tipo_combustivel} • ${getNomeCategoria(veiculo.fk_categoria)}`
+                                : "Detalhes do veículo indisponíveis"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="reserva-meta-info">
+                          <div className="meta-item">
+                            <span>Retirada</span>
+                            <strong>
+                              {formatarDataHora(reserva.dataRetirada, reserva.horaRetirada)}
+                              <br />
+                              <span className="reserva-local">
+                                {reserva.localRetirada || "Local não informado"}
+                              </span>
+                            </strong>
+                          </div>
+                          <div className="meta-item">
+                            <span>Devolução</span>
+                            <strong>
+                              {formatarDataHora(reserva.dataDevolucao, reserva.horaDevolucao)}
+                              <br />
+                              <span className="reserva-local">
+                                {reserva.localDevolucao || "Local não informado"}
+                              </span>
+                            </strong>
+                          </div>
+                        </div>
+                        {reservaEstaAtiva(reserva) && (
+                          <button
+                            className="btn-acao-outline"
+                            type="button"
+                            onClick={() => handleCancelReservation(reserva.id)}
+                          >
+                            Cancelar reserva
+                          </button>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })
+              )}
             </div>
           </section>
         )}

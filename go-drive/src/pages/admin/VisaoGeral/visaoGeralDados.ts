@@ -92,8 +92,8 @@ export const METRICAS_DADOS: MetricaDados[] = [
   },
   {
     id: "funcionarios",
-    titulo: "Número de funcionários nesta Unidade",
-    valor: "100",
+    titulo: "Funcionários cadastrados no sistema",
+    valor: "0",
     tituloGrafico: "Evolução do Quadro de Funcionários",
     descricao: "Funcionários ativos na unidade em que o administrador trabalha.",
     eixoY: "Funcionários",
