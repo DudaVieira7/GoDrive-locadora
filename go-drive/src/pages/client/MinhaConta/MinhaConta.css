@@ -409,6 +409,37 @@
   font-size: 14px;
 }
 
+.badge-status.agendada {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.badge-status.solicitada {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-status.concluida {
+  background-color: #eeeeee;
+  color: #555;
+}
+
+.badge-status.cancelada {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.reserva-local {
+  color: #777;
+  font-weight: normal;
+}
+
+.conta-reservas-vazio {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
 .btn-acao-outline {
   background: transparent;
   border: 1px solid #ff4d4d;

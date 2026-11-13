@@ -1,0 +1,480 @@
+
+.admin-aba {
+  text-decoration: none;
+}
+
+.admin-aba:focus-visible {
+  outline: 3px solid var(--verde);
+  outline-offset: 2px;
+}
+
+
+.logs-filtros-card {
+  margin-top: 28px;
+  padding: 26px 32px 32px;
+  background: var(--card);
+  border-radius: 20px;
+}
+
+.logs-secao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #26262b;
+}
+
+.logs-secao h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--verde);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.logs-campos {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.logs-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.logs-campo > span {
+  padding-left: 4px;
+  color: var(--texto-suave);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.logs-campo input,
+.logs-campo select {
+  width: 100%;
+  height: 56px;
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  outline: none;
+  background: #2f2f2f;
+  color: #fff;
+  color-scheme: dark;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.logs-campo input::placeholder {
+  color: #7b7b86;
+}
+
+.logs-campo input::-webkit-search-cancel-button {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.logs-campo select {
+  appearance: none;
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a6ff00' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 20px center;
+  cursor: pointer;
+}
+
+.logs-campo input:focus,
+.logs-campo select:focus {
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px rgba(166, 255, 0, 0.18);
+}
+
+/* ==========================================================================
+   CARD PRETO DA TABELA  (mesmo papel do card do gráfico)
+========================================================================== */
+.logs-card {
+  margin-top: 28px;
+  padding: 32px 0 8px;
+  background: var(--card);
+  border-radius: 20px;
+  color: #fff;
+  overflow: hidden;
+}
+
+.logs-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 0 30px;
+}
+
+.logs-card-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.logs-card-header p {
+  margin: 4px 0 0;
+  color: var(--texto-suave);
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+}
+
+/* Botão verde (mesmo do "Salvar Alterações") */
+.logs-exportar {
+  padding: 12px 26px;
+  border: none;
+  border-radius: 14px;
+  background: var(--verde);
+  box-shadow: 0 8px 22px rgba(166, 255, 0, 0.28);
+  color: #000;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.logs-exportar:hover:not(:disabled) {
+  box-shadow: 0 10px 26px rgba(166, 255, 0, 0.42);
+  transform: translateY(-1px);
+}
+
+.logs-exportar:disabled {
+  opacity: 0.4;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.logs-exportar:focus-visible,
+.logs-limpar:focus-visible,
+.logs-pag button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Seletor de severidade (visual do seletor de período do gráfico) */
+.logs-severidades {
+  margin-bottom: 24px;
+  padding: 0 20px;
+}
+
+.logs-contagem {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 100%;
+  width: 12px;
+  height: 12px;
+  background: rgba(56, 61, 70, 0.815);
+  font-size: 11px;
+}
+
+.admin-periodo.ativo .logs-contagem {
+  background: #7cef02;
+ 
+}
+
+.admin-periodo:focus-visible {
+  outline: 3px solid var(--verde);
+  outline-offset: 2px;
+}
+
+/* ===== Tabela ===== */
+.logs-tabela-wrap {
+  overflow-x: auto;
+}
+
+.logs-tabela {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+
+.logs-tabela th {
+  padding: 0 16px 14px;
+  color: var(--texto-suave);
+  font-family: Science Gothic Variable;
+  font-size: 0.9rem;                        /* textos nomes dos campos*/
+  font-weight: 400;
+  text-align: left;
+  
+}
+
+.logs-tabela th:first-child,
+.logs-tabela td:first-child {
+  padding-left: 5px;
+}
+
+.logs-tabela th:last-child,
+.logs-tabela td:last-child {
+  padding-right: 30px;
+}
+
+.logs-tabela td {
+  padding: 16px;
+  border-top: 1px solid #2f2f2f9b;
+  
+ 
+}
+
+.logs-tabela td > span {
+  display: block;
+}
+
+/* hover/seleção: fundo azulado + barra verde à esquerda */
+.logs-linha {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.logs-linha td:first-child {
+  transition: box-shadow 0.2s ease;
+}
+
+.logs-linha:hover,
+.logs-linha.ativa {             /*celula dos logs*/
+  background: #1a2028;
+}
+
+.logs-linha:hover td:first-child,
+.logs-linha.ativa td:first-child {
+  box-shadow: inset 4px 0 0 0 var(--verde);
+}
+
+.logs-linha:focus-visible {
+  outline: 9px solid var(--verde);
+  
+}
+
+.logs-id {
+  margin-bottom: 4px;
+  color: #05b605;
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.logs-mono-suave {
+  color: #7d8aa0;
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.logs-operador {
+  margin-bottom: 4px;
+  color: #f0ffeb;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.logs-acao {
+  color: #ffffffe3;
+  font-family: Poppins;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.logs-alvo {
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.logs-ip {
+  color: #8fa3bf;
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  font-size: 13px;
+}
+
+/* Badges de severidade */
+.logs-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.logs-badge.info {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.45);
+  color: #38bdf8;
+}
+
+.logs-badge.warning {
+  background: rgba(251, 191, 36, 0.12);
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+}
+
+.logs-badge.critical {
+  background: rgba(248, 113, 113, 0.14);
+  border-color: rgba(248, 113, 113, 0.5);
+  color: #f87171;
+}
+
+/* ===== Estado vazio ===== */
+.logs-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 48px 24px;
+  border-top: 1px solid #141a24;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+}
+
+.logs-vazio p {
+  margin: 0 0 8px;
+  color: var(--texto-suave);
+  font-size: 14px;
+}
+
+/* ===== Rodapé / paginação ===== */
+.logs-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 30px 20px;
+  border-top: 1px solid #141a24;
+}
+
+.logs-rodape-texto {
+  color: var(--texto-suave);
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+}
+
+.logs-pag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 5px;
+  background: #232327;
+  border: 1px solid #1f2733;
+  border-radius: 14px;
+}
+
+.logs-pag button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #9a9aa6;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.logs-pag button:hover:not(:disabled) {
+  background: var(--verde);
+  color: #000;
+}
+
+.logs-pag button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.logs-pag-info {
+  padding: 0 10px;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.logs-limpar {
+  padding: 9px 16px;
+  border: 1px solid rgba(166, 255, 0, 0.3);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--verde);
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.logs-limpar:hover {
+  background: var(--verde);
+  color: #000;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE
+========================================================================== */
+@media (max-width: 1100px) {
+  .logs-campos {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .logs-campo-busca {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .logs-filtros-card {
+    padding: 20px 16px 24px;
+    border-radius: 20px;
+  }
+
+  .logs-campos {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .logs-card {
+    padding-top: 22px;
+    border-radius: 20px;
+  }
+
+  .logs-card-header,
+  .logs-severidades,
+  .logs-rodape {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .logs-card-header h2 {
+    font-size: 1.05rem;
+  }
+
+  .logs-severidades .admin-periodos {
+    flex-wrap: wrap;
+  }
+
+  .logs-severidades .admin-periodo {
+    flex: 1 1 40%;
+  }
+
+  .logs-tabela th:first-child,
+  .logs-tabela td:first-child {
+    padding-left: 14px;
+  }
+}

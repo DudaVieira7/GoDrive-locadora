@@ -16,6 +16,12 @@ export interface Usuario {
 interface UsuarioArmazenado extends Usuario {
   salt: string;
   senhaHash: string;
+  tipoConta?: "cliente" | "funcionario";
+}
+
+export interface Funcionario {
+  nomeUsuario: string;
+  email: string;
 }
 
 export interface ReservaUsuario {
@@ -23,7 +29,25 @@ export interface ReservaUsuario {
   emailUsuario: string;
   idCarro: number;
   criadaEm: string;
-  status: "Solicitada";
+  status: "Solicitada" | "Cancelada";
+  localRetirada?: string;
+  localDevolucao?: string;
+  dataRetirada?: string;
+  horaRetirada?: string;
+  dataDevolucao?: string;
+  horaDevolucao?: string;
+  total?: number;
+}
+
+export interface DadosNovaReserva {
+  idCarro: number;
+  localRetirada: string;
+  localDevolucao: string;
+  dataRetirada: string;
+  horaRetirada: string;
+  dataDevolucao: string;
+  horaDevolucao: string;
+  total: number;
 }
 
 export type DadosPerfil = Pick<
@@ -43,7 +67,10 @@ function isUsuarioArmazenado(value: unknown): value is UsuarioArmazenado {
     typeof user.cpf === "string" &&
     typeof user.cnh === "string" &&
     typeof user.salt === "string" &&
-    typeof user.senhaHash === "string"
+    typeof user.senhaHash === "string" &&
+    (user.tipoConta === undefined ||
+      user.tipoConta === "cliente" ||
+      user.tipoConta === "funcionario")
   );
 }
 
@@ -67,7 +94,20 @@ function isReservaUsuario(value: unknown): value is ReservaUsuario {
     typeof reservation.emailUsuario === "string" &&
     typeof reservation.idCarro === "number" &&
     typeof reservation.criadaEm === "string" &&
-    reservation.status === "Solicitada"
+    (reservation.status === "Solicitada" || reservation.status === "Cancelada") &&
+    (reservation.localRetirada === undefined ||
+      typeof reservation.localRetirada === "string") &&
+    (reservation.localDevolucao === undefined ||
+      typeof reservation.localDevolucao === "string") &&
+    (reservation.dataRetirada === undefined ||
+      typeof reservation.dataRetirada === "string") &&
+    (reservation.horaRetirada === undefined ||
+      typeof reservation.horaRetirada === "string") &&
+    (reservation.dataDevolucao === undefined ||
+      typeof reservation.dataDevolucao === "string") &&
+    (reservation.horaDevolucao === undefined ||
+      typeof reservation.horaDevolucao === "string") &&
+    (reservation.total === undefined || typeof reservation.total === "number")
   );
 }
 
@@ -173,12 +213,130 @@ export async function criarConta(
     endereco: "",
     cpf: "",
     cnh: "",
+    tipoConta: "cliente",
     salt,
     senhaHash,
   };
 
   salvarUsuarios([...users, user]);
   localStorage.setItem(SESSION_STORAGE_KEY, user.email);
+  notificarMudancaDeAutenticacao();
+}
+
+export function listarFuncionarios(): Funcionario[] {
+  return lerUsuarios()
+    .filter((user) => user.tipoConta === "funcionario")
+    .map(({ nomeUsuario, email }) => ({ nomeUsuario, email }));
+}
+
+export function excluirFuncionario(email: string): void {
+  const normalizedEmail = email.trim().toLocaleLowerCase("pt-BR");
+  const users = lerUsuarios();
+  const funcionario = users.find(
+    (user) =>
+      user.email === normalizedEmail && user.tipoConta === "funcionario",
+  );
+
+  if (!funcionario) {
+    throw new Error("Não foi possível encontrar esse funcionário.");
+  }
+
+  salvarUsuarios(users.filter((user) => user.email !== normalizedEmail));
+  if (localStorage.getItem(SESSION_STORAGE_KEY) === normalizedEmail) {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+  }
+  notificarMudancaDeAutenticacao();
+}
+
+export async function criarFuncionario(
+  nomeUsuario: string,
+  email: string,
+  password: string,
+): Promise<void> {
+  const nome = nomeUsuario.trim();
+  const normalizedEmail = email.trim().toLocaleLowerCase("pt-BR");
+  const users = lerUsuarios();
+
+  if (nome.length < 2) {
+    throw new Error("Informe um nome com pelo menos 2 caracteres.");
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+    throw new Error("Informe um e-mail válido.");
+  }
+  if (password.length < 8) {
+    throw new Error("A senha deve ter pelo menos 8 caracteres.");
+  }
+  if (users.some((user) => user.email === normalizedEmail)) {
+    throw new Error("Já existe uma conta cadastrada com este e-mail.");
+  }
+
+  const salt = toBase64(crypto.getRandomValues(new Uint8Array(16)));
+  const senhaHash = await derivarHashSenha(password, salt);
+  const user: UsuarioArmazenado = {
+    nomeUsuario: nome,
+    email: normalizedEmail,
+    telefone: "",
+    endereco: "",
+    cpf: "",
+    cnh: "",
+    tipoConta: "funcionario",
+    salt,
+    senhaHash,
+  };
+
+  salvarUsuarios([...users, user]);
+  notificarMudancaDeAutenticacao();
+}
+
+export async function atualizarFuncionario(
+  emailAtual: string,
+  nomeUsuario: string,
+  email: string,
+  password: string,
+): Promise<void> {
+  const nome = nomeUsuario.trim();
+  const normalizedEmailAtual = emailAtual.trim().toLocaleLowerCase("pt-BR");
+  const normalizedEmail = email.trim().toLocaleLowerCase("pt-BR");
+  const users = lerUsuarios();
+  const funcionario = users.find(
+    (user) =>
+      user.email === normalizedEmailAtual && user.tipoConta === "funcionario",
+  );
+
+  if (!funcionario) {
+    throw new Error("Não foi possível encontrar esse funcionário.");
+  }
+  if (nome.length < 2) {
+    throw new Error("Informe um nome com pelo menos 2 caracteres.");
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+    throw new Error("Informe um e-mail válido.");
+  }
+  if (password && password.length < 8) {
+    throw new Error("A senha deve ter pelo menos 8 caracteres.");
+  }
+  if (
+    users.some(
+      (user) => user.email === normalizedEmail && user.email !== normalizedEmailAtual,
+    )
+  ) {
+    throw new Error("Já existe uma conta cadastrada com este e-mail.");
+  }
+
+  let salt = funcionario.salt;
+  let senhaHash = funcionario.senhaHash;
+  if (password) {
+    salt = toBase64(crypto.getRandomValues(new Uint8Array(16)));
+    senhaHash = await derivarHashSenha(password, salt);
+  }
+
+  salvarUsuarios(
+    users.map((user) =>
+      user.email === normalizedEmailAtual
+        ? { ...user, nomeUsuario: nome, email: normalizedEmail, salt, senhaHash }
+        : user,
+    ),
+  );
   notificarMudancaDeAutenticacao();
 }
 
@@ -234,21 +392,68 @@ export function getReservasDoUsuario(): ReservaUsuario[] {
   );
 }
 
-export function solicitarAluguel(idCarro: number): void {
+export function solicitarAluguel(dados: DadosNovaReserva): void {
   const currentUser = getUsuarioAtual();
   if (!currentUser) throw new Error("Entre na sua conta para solicitar um aluguel.");
-  if (!Number.isInteger(idCarro) || idCarro < 1) {
+  if (!Number.isInteger(dados.idCarro) || dados.idCarro < 1) {
     throw new Error("O veículo selecionado é inválido.");
+  }
+  if (
+    !dados.localRetirada.trim() ||
+    !dados.localDevolucao.trim() ||
+    !dados.dataRetirada ||
+    !dados.horaRetirada ||
+    !dados.dataDevolucao ||
+    !dados.horaDevolucao ||
+    !Number.isFinite(dados.total) ||
+    dados.total < 0
+  ) {
+    throw new Error("Confira os dados do período e dos locais da reserva.");
+  }
+
+  const inicio = new Date(
+    `${dados.dataRetirada}T${dados.horaRetirada}:00`,
+  ).getTime();
+  const fim = new Date(
+    `${dados.dataDevolucao}T${dados.horaDevolucao}:00`,
+  ).getTime();
+  if (Number.isNaN(inicio) || Number.isNaN(fim) || fim <= inicio) {
+    throw new Error("O período da reserva é inválido.");
   }
 
   const reservations = lerReservas();
   reservations.push({
     id: crypto.randomUUID(),
     emailUsuario: currentUser.email,
-    idCarro,
+    ...dados,
+    localRetirada: dados.localRetirada.trim(),
+    localDevolucao: dados.localDevolucao.trim(),
     criadaEm: new Date().toISOString(),
     status: "Solicitada",
   });
+  localStorage.setItem(RESERVATIONS_STORAGE_KEY, JSON.stringify(reservations));
+}
+
+export function cancelarReserva(id: string): void {
+  const currentUser = getUsuarioAtual();
+  if (!currentUser) throw new Error("Entre na sua conta para cancelar uma reserva.");
+
+  const reservations = lerReservas();
+  const reservationIndex = reservations.findIndex(
+    (reservation) =>
+      reservation.id === id && reservation.emailUsuario === currentUser.email,
+  );
+  if (reservationIndex === -1) {
+    throw new Error("Não foi possível encontrar essa reserva.");
+  }
+  if (reservations[reservationIndex].status === "Cancelada") {
+    throw new Error("Essa reserva já foi cancelada.");
+  }
+
+  reservations[reservationIndex] = {
+    ...reservations[reservationIndex],
+    status: "Cancelada",
+  };
   localStorage.setItem(RESERVATIONS_STORAGE_KEY, JSON.stringify(reservations));
 }
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { PointerEvent } from "react";
-import type { MetricaDados, Ponto } from "./Visaogeraldados";
+import type { MetricaDados, Ponto } from "./visaoGeralDados";
 
 /* ==========================================================================
    Grafico.tsx
